@@ -21,7 +21,7 @@ def load_csv_data(data_path, sub_sample=False):
         input_data = input_data[::50]
         ids = ids[::50]
 
-    return yb, input_data, ids
+    return ids, yb, input_data
 
 
 def predict_labels(weights, data):

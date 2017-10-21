@@ -7,7 +7,7 @@ def compute_mse(e):
 
 def compute_loss(y, tx, w):
     e = y - tx.dot(w)
-    return calculate_mse(e)
+    return compute_mse(e)
 
 def compute_gradient(y, tx, w):
     e = y - tx.dot(w)
