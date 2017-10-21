@@ -10,7 +10,7 @@ def least_squares(y, tx):
     b = tx.T.dot(y)
 
     w = np.linalg.solve(a, b)
-    loss = compute_loss(t, tx, w)
+    loss = compute_loss(y, tx, w)
     return w, loss
 
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
@@ -19,12 +19,12 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     w_start = initial_w
     w = w_start
 
-	for n_iter in range(max_iters):
-		gradient = compute_gradient(y, tx, w)
-		loss = compute_loss(y,tx,w)
-		w = w - gamma * gradient
+    for n_iter in range(max_iters):
+        gradient = compute_gradient(y, tx, w)
+        loss = compute_loss(y,tx,w)
+        w = w - gamma * gradient
 
-	return w, loss
+    return w, loss
 
 def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     # Linear regression using stochastic gradient descent
@@ -46,9 +46,9 @@ def ridge_regression(y, tx, lambda_):
     b = tx.T.dot(y)
 
     w = np.linalg.solve(a, b)
-	loss = compute_loss(y, tx, w)
+    loss = compute_loss(y, tx, w)
 
-	return w, loss
+    return w, loss
 
 def logistic_regression(y, tx, initial_w,max_iters, gamma) :
     return NotImplemented
