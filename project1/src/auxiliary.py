@@ -25,7 +25,7 @@ def compute_logistic_loss(y, tx, w):
 
     return - loss[0][0]
 
-def compute_logistic_gradient(y,tx, w):
+def compute_logistic_gradient(y, tx, w):
     prediction = sigmoid(tx.dot(w))
     gradient = tx.T.dot(prediction - y)
 
@@ -33,6 +33,6 @@ def compute_logistic_gradient(y,tx, w):
 
 def regularizer(lambda_, w):
     loss_reg = lambda_ * w.T.dot(w)[0][0]
-	gradient_reg = 2 * lambda_ * w
+    gradient_reg = 2 * lambda_ * w
 
-	return loss_reg, gradient_reg
+    return loss_reg, gradient_reg

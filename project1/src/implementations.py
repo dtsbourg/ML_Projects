@@ -83,12 +83,12 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
 
     for n_iter in range(max_iters):
         loss = compute_logistic_loss(y, tx, w)
-    	gradient = compute_logistic_gradient(y, tx, w)
-		loss_reg, gradient_reg = regularizers(lambda_, w)
+        gradient = compute_logistic_gradient(y, tx, w)
+        loss_reg, gradient_reg = regularizers(lambda_, w)
 
-		loss = loss + loss_reg
-		gradient = gradient + gradient_reg
-		w = w - gamma * gradient
+        loss = loss + loss_reg
+        gradient = gradient + gradient_reg
+        w = w - gamma * gradient
 
     return w, loss
 
@@ -121,8 +121,8 @@ def reg_logistic_regression_SGD(y, tx, lambda_, initial_w, max_iters, gamma):
         gradients = compute_gradient(minibatch_y, minibatch_tx, w)
         loss_reg, gradient_reg = regularizer(lambda_, w)
 
-		loss = loss + loss_reg
-		gradient = gradient + gradient_reg
+        loss = loss + loss_reg
+        gradient = gradient + gradient_reg
 
         w = w - [gamma * g for g in gradients]
 
