@@ -16,6 +16,32 @@ def compute_gradient(y, tx, w):
     grad = 1/N * np.dot(tx.T, e)
     return grad
 
+def gradient_descent(y, tx, initial_w, max_iters, gamma):
+    """Gradient descent algorithm."""
+    # Define parameters to store w and loss
+    ws = [initial_w]
+    losses = []
+    w = initial_w
+    for n_iter in range(max_iters):
+        gradients = compute_gradient(y,tx,w)
+        loss = compute_loss(y,tx,w)
+        w = w - [gamma * g for g in gradients]
+        # store w and loss
+        ws.append(w)
+        losses.append(loss)
+        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
+              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+
+    return losses, ws
+
+def standardize(x):
+    """Standardize the original data set."""
+    mean_x = np.mean(x)
+    x = x - mean_x
+    std_x = np.std(x)
+    x = x / std_x
+    return x, mean_x, std_x
+
 def sigmoid(t):
     return 1 / (1 + np.exp(-t))
 
@@ -53,6 +79,10 @@ def build_poly(x, degree):
 
     return new_x
 
+def generate_w(dim, num_intervals, upper, lower):
+    """Generate a grid of values for [w0, ..., wd]."""
+    return [[np.linspace(lower,upper,num_intervals)] for _ in range(dim)]
+
 def build_k_indices(y, k_fold, seed):
     """build k indices for k-fold."""
     num_row = y.shape[0]
@@ -77,8 +107,4 @@ def compute_classification_error(y, tx, w):
             result[idx] = 0.0
         elif y_n == -1 and s[idx] < 0.5:
             result[idx] = 0.0
-    if(result.sum()/y.shape[0] > 0.7):
-        #print(s)
-        #print(tx.dot(w))
-        print(w)
     return result.sum()/y.shape[0]
