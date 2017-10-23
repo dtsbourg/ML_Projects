@@ -30,7 +30,7 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
 
     return w, loss
 
-def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
+def least_squares_SGD(y, tx, initial_w, batch_size, max_iters, gamma):
     """
     Linear regression using stochastic gradient descent
     Returns optimal weights and associated minimum loss
@@ -40,7 +40,7 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
 
     for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size, max_iters):
         loss = compute_loss(minibatch_y, minibatch_tx, w)
-        gradients = compute_stoch_gradient(minibatch_y, minibatch_tx, w)
+        gradients = compute_gradient(minibatch_y, minibatch_tx, w)
         w = w - [gamma * g for g in gradients]
 
     return w, loss
