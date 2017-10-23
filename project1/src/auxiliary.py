@@ -20,19 +20,38 @@ def sigmoid(t):
     return 1 / (1 + np.exp(-t))
 
 def compute_logistic_loss(y, tx, w):
-    prediction = sigmoid(tx.dot(w))
-    loss = y.T.dot(np.log(prediction)) + (1-y).T.dot(np.log(1 - prediction))
-
-    return - loss[0][0]
+    #prediction = sigmoid(tx.dot(w))
+    #loss = -y.T.dot(np.log(prediction)) - (1-y).T.dot(np.log(1 - prediction)) # gives NaN ...
+    loss = np.sum(np.log(1+np.exp(tx.dot(w))) - y*(tx.dot(w))) 
+    return loss#[0][0]
 
 def compute_logistic_gradient(y, tx, w):
     prediction = sigmoid(tx.dot(w))
     gradient = tx.T.dot(prediction - y)
-
     return gradient
 
 def regularizer(lambda_, w):
     loss_reg = lambda_ * w.T.dot(w)[0][0]
     gradient_reg = 2 * lambda_ * w
-
     return loss_reg, gradient_reg
+
+def build_poly(x, degree):
+    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    if(degree < 1):
+        return x
+    
+    new_x = np.zeros(np.concatenate([np.array(x.shape), [degree+1]]))
+    new_x[..., 0] = x**0 # add zeros (for degree 0)
+    new_x[..., 1] = x**1 # add x (for degree 1)
+
+    if degree <= 1:
+        return new_x
+    else:  
+        for i in range(degree-1):
+            cur_degree = i+2
+            new_x[...,cur_degree] = x**cur_degree
+
+    return new_x
+
+
+

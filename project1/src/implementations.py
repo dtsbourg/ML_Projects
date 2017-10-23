@@ -78,17 +78,33 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     Regularized logistic regression using gradient descent
     Returns optimal weights and associated minimum loss
     """
+    verbose = False
+    threshold = 1e-8
     w_start = initial_w
     w = w_start
-
+    loss_old = 0.0
+    
     for n_iter in range(max_iters):
+        #print('compute loss')
         loss = compute_logistic_loss(y, tx, w)
+        #print('compute gradient')
         gradient = compute_logistic_gradient(y, tx, w)
-        loss_reg, gradient_reg = regularizers(lambda_, w)
-
+        #print('compute regularizers')
+        loss_reg, gradient_reg = regularizer(lambda_, w)
         loss = loss + loss_reg
+        
+        if(abs(loss_old/loss) < 1.0+threshold # stop automatically when loss does not change significantly anymore
+           and abs(loss_old/loss) > 1.0-threshold
+           and n_iter !=0):
+            break
+        loss_old = loss
+        
         gradient = gradient + gradient_reg
         w = w - gamma * gradient
+        if verbose:
+            print("Current iteration={i}, loss={l}".format(i=n_iter, l=loss))
+        if n_iter = max_iters-1:
+            print('\t reg_logistic_regression: stop due to max_iters')
 
     return w, loss
 
