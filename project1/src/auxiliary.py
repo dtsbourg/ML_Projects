@@ -53,5 +53,32 @@ def build_poly(x, degree):
 
     return new_x
 
+def build_k_indices(y, k_fold, seed):
+    """build k indices for k-fold."""
+    num_row = y.shape[0]
+    interval = int(num_row / k_fold)
+    np.random.seed(seed)
+    indices = np.random.permutation(num_row)
+    k_indices = [indices[k * interval: (k + 1) * interval]
+                 for k in range(k_fold)]
+    return np.array(k_indices)
 
+def build_idx(ranges):
+    clean_idx = np.asarray([list(range(i,j)) for i,j in ranges])
+    return [item for sublist in clean_idx for item in sublist]
 
+def compute_classification_error(y, tx, w):
+    # TODO : Check impl
+    s = sigmoid(tx.dot(w))
+    result = np.ones(y.shape[0])
+    for idx, y_n in enumerate(y):
+        #print(idx, y_n, s[idx])
+        if y_n == 1 and s[idx] >= 0.5:
+            result[idx] = 0.0
+        elif y_n == -1 and s[idx] < 0.5:
+            result[idx] = 0.0
+    if(result.sum()/y.shape[0] > 0.7):
+        #print(s)
+        #print(tx.dot(w))
+        print(w)
+    return result.sum()/y.shape[0]
