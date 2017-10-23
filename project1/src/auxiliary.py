@@ -43,7 +43,7 @@ def standardize(x):
     return x, mean_x, std_x
 
 def sigmoid(t):
-    return 1 / (1 + np.exp(-t))
+    return 1. / (1. + np.exp(-t))
 
 def compute_logistic_loss(y, tx, w):
     #prediction = sigmoid(tx.dot(w))
@@ -57,7 +57,7 @@ def compute_logistic_gradient(y, tx, w):
     return gradient
 
 def regularizer(lambda_, w):
-    loss_reg = lambda_ * w.T.dot(w)[0][0]
+    loss_reg = lambda_ * w.T.dot(w)
     gradient_reg = 2 * lambda_ * w
     return loss_reg, gradient_reg
 

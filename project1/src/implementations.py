@@ -61,7 +61,7 @@ def ridge_regression(y, tx, lambda_):
     mse = np.asarray((e**2).mean())
     return w_star, mse
 
-def logistic_regression(y, tx, initial_w,max_iters, gamma) :
+def logistic_regression(y, tx, initial_w, max_iters, gamma) :
     """
     Logistic regression using gradient descent
     Returns optimal weights and associated minimum loss
@@ -70,8 +70,8 @@ def logistic_regression(y, tx, initial_w,max_iters, gamma) :
     w = w_start
 
     for n_iter in range(max_iters):
-        loss = calculate_loss(y, tx, w)
-        gradient = calculate_gradient(y, tx, w)
+        loss = compute_logistic_loss(y, tx, w)
+        gradient = compute_logistic_gradient(y, tx, w)
         w = w - gamma * gradient
 
     return w, loss
@@ -106,8 +106,8 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
         w = w - gamma * gradient
         if verbose:
             print("Current iteration={i}, loss={l}".format(i=n_iter, l=loss))
-        if n_iter == max_iters-1:
-            print('\t reg_logistic_regression: stop due to max_iters')
+            if n_iter == max_iters-1:
+                print('\t reg_logistic_regression: stop due to max_iters')
 
     return w, loss
 
