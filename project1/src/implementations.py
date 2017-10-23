@@ -103,7 +103,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
         w = w - gamma * gradient
         if verbose:
             print("Current iteration={i}, loss={l}".format(i=n_iter, l=loss))
-        if n_iter = max_iters-1:
+        if n_iter == max_iters-1:
             print('\t reg_logistic_regression: stop due to max_iters')
 
     return w, loss
