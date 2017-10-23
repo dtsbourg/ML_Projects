@@ -63,21 +63,9 @@ def regularizer(lambda_, w):
 
 def build_poly(x, degree):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    if(degree < 1):
-        return x
-    
-    new_x = np.zeros(np.concatenate([np.array(x.shape), [degree+1]]))
-    new_x[..., 0] = x**0 # add zeros (for degree 0)
-    new_x[..., 1] = x**1 # add x (for degree 1)
-
-    if degree <= 1:
-        return new_x
-    else:  
-        for i in range(degree-1):
-            cur_degree = i+2
-            new_x[...,cur_degree] = x**cur_degree
-
-    return new_x
+    manifold = lambda x, degree: [x**j for j in range(0,degree)]
+    poly = [np.asarray(manifold(val, degree)).flatten() for val in x]
+    return np.asarray(poly)
 
 def generate_w(dim, num_intervals, upper, lower):
     """Generate a grid of values for [w0, ..., wd]."""
