@@ -50,16 +50,15 @@ def ridge_regression(y, tx, lambda_):
     Ridge regression using normal equations
     Returns optimal weights and associated minimum loss
     """
-    lambda_prime = lambda_ / (2*tx.shape[0])
-    a = np.linalg.inv(tx.transpose().dot(tx) + lambda_*np.eye(tx.shape[1]))
+    lambda_prime = lambda_ * 2*tx.shape[0]
     
-    b = tx.transpose().dot(y)
-    w_star = a.dot(b)
+    a = tx.T.dot(tx) + lambda_prime*np.eye(tx.shape[1])
+    b = tx.T.dot(y)
+    w_star = np.linalg.solve(a, b)
     
-    e = y - tx.dot(w_star)
+    loss = compute_loss(y, tx, w_star)
     
-    mse = np.asarray((e**2).mean())
-    return w_star, mse
+    return w_star, loss
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma, SGD=False, batch_size=-1) :
     """

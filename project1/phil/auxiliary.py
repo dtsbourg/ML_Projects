@@ -53,10 +53,10 @@ def sigmoid(t): # OK
     return 1. / (1. + np.exp(-t))
 
 def compute_logistic_loss(y, tx, w):
-    #prediction = sigmoid(tx.dot(w))
-    #loss = -y.T.dot(np.log(prediction)) - (1-y).T.dot(np.log(1 - prediction)) # gives NaN ...
-    loss = np.sum(np.log(1.0+np.exp(tx.dot(w))) - y*(tx.dot(w))) 
-    return loss#[0][0]
+    prediction = sigmoid(tx.dot(w))
+    loss = -y.T.dot(np.log(prediction)) - (1.-y).T.dot(np.log(1. - prediction)) # gives NaN ...
+    #loss = np.sum(np.log(1.0+np.exp(tx.dot(w))) - y*(tx.dot(w))) 
+    return loss[0][0]
 
 def compute_logistic_gradient(y, tx, w):
     prediction = sigmoid(tx.dot(w))
@@ -118,7 +118,7 @@ def build_k_indices(y, k_fold, seed):
     indices = np.random.permutation(num_row)
     k_indices = [indices[k * interval: (k + 1) * interval]
                  for k in range(k_fold)]
-    return np.array(k_indices)
+    return np.array(k_indices).astype(int)
 
 def build_idx(ranges):
     clean_idx = np.asarray([list(range(i,j)) for i,j in ranges])
@@ -150,8 +150,8 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
 
-def compute_classification_error(y, tx, w):
-    y_pred = predict_labels(w, tx)
+def compute_classification_error(y, tx, w, logistic_reg=True):
+    y_pred = predict_labels(w, tx, logistic_reg)
     s = np.sum(y != y_pred)
     return s, s/y.shape[0]
 
@@ -238,3 +238,22 @@ def check_stop(a, b, threshold=1e-7):
         return True
     else:
         return False
+
+    
+def split_data_k_fold(x, y, k_indices, k):
+    k_indices_train = np.array([])
+    
+    for i in range(k_indices.shape[0]):
+        if i != k:
+            k_indices_train = np.append(k_indices_train, k_indices[i])
+    
+    k_indices_test = k_indices[k]
+    
+    x_train = x[k_indices_train.astype(int)]
+    y_train = y[k_indices_train.astype(int)]
+    
+    x_test = x[k_indices_test.astype(int)]
+    y_test = y[k_indices_test.astype(int)]
+        
+    return x_train, x_test, y_train, y_test
+    

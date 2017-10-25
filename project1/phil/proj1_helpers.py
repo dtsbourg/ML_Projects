@@ -56,11 +56,15 @@ def load_easy_data(sub_sample=False, add_outlier=False): # OK
     return ids, gender, x
 
 
-def predict_labels(weights, data): # OK
+def predict_labels(weights, data, logistic_reg=True): # OK
     """Generates class predictions given weights, and a test data matrix"""
     y_pred = np.dot(data, weights)
-    y_pred[np.where(y_pred <= 0)] = 0
-    y_pred[np.where(y_pred > 0)] = 1
+    if logistic_reg:
+        decision_point = 0.0
+    else:
+        decision_point = 0.5
+    y_pred[np.where(y_pred <= decision_point)] = 0
+    y_pred[np.where(y_pred > decision_point)] = 1
     
     return y_pred
 
