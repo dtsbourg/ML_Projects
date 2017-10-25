@@ -1,4 +1,5 @@
 import numpy as np
+from proj1_helpers import *
 
 # Contains all auxiliary functions used in implementations.py
 
@@ -13,7 +14,7 @@ def compute_gradient(y, tx, w):
     e = y - tx.dot(w)
     N = y.shape[0]
 
-    grad = 1/N * np.dot(tx.T, e)
+    grad = -1.0/N * np.dot(tx.T, e)
     return grad
 
 def gradient_descent(y, tx, initial_w, max_iters, gamma):
@@ -35,21 +36,40 @@ def gradient_descent(y, tx, initial_w, max_iters, gamma):
     return losses, ws
 
 def standardize(x):
-    """Standardize the original data set."""
-    mean_x = np.mean(x)
+    """
+    Standardize the original data set.
+       INPUT:
+           - x : array N x D
+       OUTPUT:
+           - x :     array size N x D
+           - mean_x: vec   size D
+           - std_x:  vec   size D
+    """
+    mean_x = np.mean(x, axis =0)
     x = x - mean_x
-    std_x = np.std(x)
+    std_x = np.std(x, axis=0)
     x = x / std_x
     return x, mean_x, std_x
 
+def de_standardize(x, mean_x, std_x):
+    """Reverse the procedure of standardization."""
+    x = x * std_x
+    x = x + mean_x
+    return x
+
 def sigmoid(t):
+    """
+    Returns the sigmoid function of t
+    INPUT:
+        - t is scalar or np.array
+    OUTPUT
+        - a scalar or np.array, depending on t
+    """
     return 1. / (1. + np.exp(-t))
 
 def compute_logistic_loss(y, tx, w):
-    #prediction = sigmoid(tx.dot(w))
-    #loss = -y.T.dot(np.log(prediction)) - (1-y).T.dot(np.log(1 - prediction)) # gives NaN ...
     loss = np.sum(np.log(1+np.exp(tx.dot(w))) - y*(tx.dot(w))) 
-    return loss#[0][0]
+    return loss
 
 def compute_logistic_gradient(y, tx, w):
     prediction = sigmoid(tx.dot(w))
@@ -62,10 +82,32 @@ def regularizer(lambda_, w):
     return loss_reg, gradient_reg
 
 def build_poly(x, degree):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    manifold = lambda x, degree: [x**j for j in range(0,degree)]
-    poly = [np.asarray(manifold(val, degree)).flatten() for val in x]
-    return np.asarray(poly)
+    """polynomial basis functions for input data x, for j=0 up to j=degree.
+        INPUT:
+            - matrix N x D 
+                [ X_01 X_02 ... X_0D
+                  X_11 X_12 ... X_1D
+                    .    .   .    .
+                  X_N1 X_N2 ... X_ND]
+        OUTPUT
+            - matrix  N x (D * degree + 1)
+                [ 1 X_01 X_02 ... X_0D  X_01^2 X_02^2 ... X_0D^degree
+                  1 X_11 X_12 ... X_1D  ...
+                     .    .   .    .
+                  1 X_N1 X_N2 ... X_ND  X_N1^2 X_N2^2 ... X_ND^degree]
+            """
+    if(degree < 1): # should not happen
+        return x
+    
+    new_x = np.c_[np.ones((x.shape[0], 1)), x]
+    
+    if degree <= 1:
+        return new_x
+    else:  
+        for i in range(degree-1):
+            cur_degree = i+2
+            new_x =  np.c_[new_x, x**cur_degree]
+    return new_x
 
 def generate_w(dim, num_intervals, upper, lower):
     """Generate a grid of values for [w0, ..., wd]."""
@@ -112,13 +154,52 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
 
             
 def compute_classification_error(y, tx, w):
-    # TODO : Check impl
-    s = sigmoid(tx.dot(w))
-    result = np.ones(y.shape[0])
-    for idx, y_n in enumerate(y):
-        #print(idx, y_n, s[idx])
-        if y_n == 1 and s[idx] >= 0.5:
-            result[idx] = 0.0
-        elif y_n == -1 and s[idx] < 0.5:
-            result[idx] = 0.0
-    return result.sum()/y.shape[0]
+    y_pred = predict_labels(w, tx)
+    s = np.sum(y != y_pred)
+    return s, s/y.shape[0]
+
+def sample_data(y, x, seed, size_samples): # OK
+    """sample from dataset."""
+    np.random.seed(seed)
+    num_observations = y.shape[0]
+    random_permuted_indices = np.random.permutation(num_observations)
+    y = y[random_permuted_indices]
+    x = x[random_permuted_indices]
+    return y[:size_samples], x[:size_samples]
+
+
+
+def split_data(x, y, ratio, seed=1):
+    """
+    split the dataset based on the split ratio. If ratio is 0.8 
+    you will have 80% of your data set dedicated to training 
+    and the rest dedicated to testing
+    """
+    # set seed
+    N = y.shape[0]
+    idx = np.arange(N)
+    np.random.shuffle(idx)
+        
+    x_shuffle = x[idx,:]
+    y_shuffle = y[idx]
+    
+    ind_lim = int(N*ratio)
+    
+    x_train = x_shuffle[0:ind_lim]
+    y_train = y_shuffle[0:ind_lim]
+    
+    x_test = x_shuffle[ind_lim:]
+    y_test = y_shuffle[ind_lim:]
+    
+    return x_train, x_test, y_train, y_test
+
+stagnation_count = 0
+def check_stop(a, b, threshold=1e-7):
+    global stagnation_count
+    if abs(a-b) < threshold:
+        stagnation_count = stagnation_count + 1
+    if stagnation_count > 5:
+        stagnation_count = 0
+        return True
+    else:
+        return False
