@@ -39,9 +39,9 @@ def least_squares_SGD(y, tx, initial_w, batch_size, max_iters, gamma):
     loss = compute_loss(y, tx, w)
 
     for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size, max_iters):
-        loss = compute_loss(minibatch_y, minibatch_tx, w)
+        loss = compute_loss(y, tx, w)
         gradients = compute_gradient(minibatch_y, minibatch_tx, w)
-        w = w - [gamma * g for g in gradients]
+        w = w - gamma * gradients
 
     return w, loss
 
@@ -68,12 +68,19 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma) :
     """
     w_start = initial_w
     w = w_start
+    loss_old = 0.0
 
     for n_iter in range(max_iters):
         loss = compute_logistic_loss(y, tx, w)
         gradient = compute_logistic_gradient(y, tx, w)
         w = w - gamma * gradient
-
+        
+        if check_stop(loss, loss_old):
+            print('break!')
+            w = w_new
+            break;
+        loss_old = loss
+        
     return w, loss
 
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
@@ -81,34 +88,21 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     Regularized logistic regression using gradient descent
     Returns optimal weights and associated minimum loss
     """
-    verbose = False
-    threshold = 1e-8
-    w_start = initial_w
-    w = w_start
+    w = initial_w
     loss_old = 0.0
     
     for n_iter in range(max_iters):
-        #print('compute loss')
         loss = compute_logistic_loss(y, tx, w)
-        #print('compute gradient')
         gradient = compute_logistic_gradient(y, tx, w)
-        #print('compute regularizers')
         loss_reg, gradient_reg = regularizer(lambda_, w)
-        loss = loss + loss_reg
-        
-        if(abs(loss_old/loss) < 1.0+threshold # stop automatically when loss does not change significantly anymore
-           and abs(loss_old/loss) > 1.0-threshold
-           and n_iter !=0):
-            break
-        loss_old = loss
-        
+        loss_new = loss + loss_reg
         gradient = gradient + gradient_reg
         w = w - gamma * gradient
-        if verbose:
-            print("Current iteration={i}, loss={l}".format(i=n_iter, l=loss))
-            if n_iter == max_iters-1:
-                print('\t reg_logistic_regression: stop due to max_iters')
-
+            
+        if check_stop(loss, loss_old):
+            print('break!')
+            break;
+        loss_old = loss
     return w, loss
 
 def logistic_regression_SGD(y, tx, initial_w,max_iters, gamma) :
@@ -118,13 +112,18 @@ def logistic_regression_SGD(y, tx, initial_w,max_iters, gamma) :
     """
     w_start = initial_w
     w = w_start
-
+    loss_old = 0.0
+    
     for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size, max_iters):
-        loss = compute_loss(minibatch_y, minibatch_tx, w)
-        gradients = compute_gradient(minibatch_y, minibatch_tx, w)
-
-        w = w - [gamma * g for g in gradients]
-
+        loss = compute_loss(y, tx, w)
+        gradient = compute_gradient(minibatch_y, minibatch_tx, w)
+        w = w - gamma * gradient
+            
+        if check_stop(loss, loss_old):
+            print('break!')
+            break;
+        loss_old = loss
+        
     return w, loss
 
 def reg_logistic_regression_SGD(y, tx, lambda_, initial_w, max_iters, gamma):
@@ -134,15 +133,19 @@ def reg_logistic_regression_SGD(y, tx, lambda_, initial_w, max_iters, gamma):
     """
     w_start = initial_w
     w = w_start
-
+    loss_old = 0.0
+    
     for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size, max_iters):
         loss = compute_loss(minibatch_y, minibatch_tx, w)
-        gradients = compute_gradient(minibatch_y, minibatch_tx, w)
+        gradient = compute_gradient(minibatch_y, minibatch_tx, w)
         loss_reg, gradient_reg = regularizer(lambda_, w)
-
         loss = loss + loss_reg
         gradient = gradient + gradient_reg
-
-        w = w - [gamma * g for g in gradients]
-
+        w = w - gamma * gradient
+            
+        if check_stop(loss, loss_old):
+            print('break!')
+            break;
+        loss_old = loss
+        
     return w, loss
