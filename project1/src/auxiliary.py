@@ -14,7 +14,7 @@ def compute_gradient(y, tx, w):
     e = y - tx.dot(w)
     N = y.shape[0]
 
-    grad = 1/N * np.dot(tx.T, e)
+    grad = -1.0/N * np.dot(tx.T, e)
     return grad
 
 def gradient_descent(y, tx, initial_w, max_iters, gamma):
