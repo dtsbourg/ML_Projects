@@ -26,7 +26,7 @@ def standardize(x): # OK
            - x :     array size N x D
            - mean_x: vec   size D
            - std_x:  vec   size D
-    """
+    """        
     mean_x = np.mean(x, axis =0)
     x = x - mean_x
     std_x = np.std(x, axis=0)
@@ -47,8 +47,8 @@ def sigmoid(t): # OK
     OUTPUT
         - a scalar or np.array, depending on t
     """
-    t[t>100.0]=100.0
-    t[t<-100.0]=-100.0
+    t[t>20.0]=20.0
+    t[t<-20.0]=-20.0
     
     return 1. / (1. + np.exp(-t))
 
@@ -56,7 +56,7 @@ def compute_logistic_loss(y, tx, w):
     prediction = sigmoid(tx.dot(w))
     loss = -y.T.dot(np.log(prediction)) - (1.-y).T.dot(np.log(1. - prediction)) # gives NaN ...
     #loss = np.sum(np.log(1.0+np.exp(tx.dot(w))) - y*(tx.dot(w))) 
-    return loss[0][0]
+    return loss#[0][0]
 
 def compute_logistic_gradient(y, tx, w):
     prediction = sigmoid(tx.dot(w))
@@ -256,4 +256,91 @@ def split_data_k_fold(x, y, k_indices, k):
     y_test = y[k_indices_test.astype(int)]
         
     return x_train, x_test, y_train, y_test
+
+
+
+def init_list_of_objects(size):
+    list_of_objects = list()
+    for i in range(0,size):
+        list_of_objects.append( list() )
+    return list_of_objects
+
+def split_data_boson(ids, x_train, labels):  
+    ids_split = init_list_of_objects(8)
+    labels_split = init_list_of_objects(8)
+    x_train_split = init_list_of_objects(8)
+    
+    for i in range(x_train.shape[0]):
+        if x_train[i,22] == 0:
+            j = 0
+            ranges = [(1,4), (7,12), (13,22)] # column 29 is null
+            keep_idx = build_idx(ranges)
+            ranges2 = [(0,4), (7,12), (13,22)] # column 29 is null
+            keep_idx2 = build_idx(ranges2)
+            if x_train[i,0] == -999:
+                ids_split[j].append(ids[i])
+                labels_split[j].append(labels[i])
+                x_train_split[j].append(x_train[i,keep_idx])
+            else :
+                ids_split[j+1].append(ids[i])
+                labels_split[j+1].append(labels[i])
+                x_train_split[j+1].append(x_train[i,keep_idx2])
+        elif x_train[i,22] == 1:
+            j = 2
+            ranges = [(1,4), (7,12), (13,22), (23, 26)]
+            keep_idx = build_idx(ranges)
+            ranges2 = [(0,4), (7,12), (13,22), (23, 26)]
+            keep_idx2 = build_idx(ranges2)
+            if x_train[i,0] == -999:
+                ids_split[j].append(ids[i])
+                labels_split[j].append(labels[i])
+                x_train_split[j].append(x_train[i,keep_idx])
+            else :
+                ids_split[j+1].append(ids[i])
+                labels_split[j+1].append(labels[i])
+                x_train_split[j+1].append(x_train[i,keep_idx2])
+        elif x_train[i,22] == 2:
+            j = 4
+            ranges = [(1,22), (23,30)]
+            keep_idx = build_idx(ranges)
+            ranges2 = [(0,22), (23,30)]
+            keep_idx2 = build_idx(ranges2)
+            if x_train[i,0] == -999:
+                ids_split[j].append(ids[i])
+                labels_split[j].append(labels[i])
+                x_train_split[j].append(x_train[i,keep_idx])
+            else :
+                ids_split[j+1].append(ids[i])
+                labels_split[j+1].append(labels[i])
+                x_train_split[j+1].append(x_train[i,keep_idx2])
+        elif x_train[i,22] == 3:
+            j = 6
+            ranges = [(1,22), (23,30)]
+            keep_idx = build_idx(ranges)
+            ranges2 = [(0,22), (23,30)]
+            keep_idx2 = build_idx(ranges2)
+            if x_train[i,0] == -999:
+                ids_split[j].append(ids[i])
+                labels_split[j].append(labels[i])
+                x_train_split[j].append(x_train[i,keep_idx])
+            else :
+                ids_split[j+1].append(ids[i])
+                labels_split[j+1].append(labels[i])
+                x_train_split[j+1].append(x_train[i,keep_idx2])
+        
+        # transform lists in arrays
+    for i in range(len(ids_split)):
+        ids_split[i] = np.array(ids_split[i])
+        labels_split[i] = np.array(labels_split[i])
+        x_train_split[i] = np.array(x_train_split[i])
+
+    return ids_split, labels_split, x_train_split
+
+
+def reduce_size_of_losses(losses):
+    red = [0] * len(losses)
+    for r in range(len(losses)):
+        red[r] = np.linalg.norm(losses[r])
+    return red
+
     

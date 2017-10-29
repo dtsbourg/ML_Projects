@@ -76,7 +76,6 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, SGD=False, batch_siz
         
         if check_stop(loss, loss_old):
             print('break!')
-            w = w_new
             break;
         loss_old = loss
 
