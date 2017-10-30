@@ -30,13 +30,14 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
 
     return w, loss
 
-def least_squares_SGD(y, tx, initial_w, batch_size, max_iters, gamma):
+def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     """
     Linear regression using stochastic gradient descent
     Returns optimal weights and associated minimum loss
     """
     w = initial_w
     loss = compute_loss(y, tx, w)
+    batch_size=1
 
     for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size, max_iters):
         loss = compute_loss(y, tx, w) # avant: minibatch_y et minibatch_tx
@@ -75,7 +76,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, SGD=False, batch_siz
         w = w - gamma * gradient
         
         if check_stop(loss, loss_old):
-            print('break!')
+            #print('break!')
             break;
         loss_old = loss
 
@@ -102,7 +103,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, SGD=Fal
             w = w - gamma * gradient
             
             if check_stop(loss, loss_old):
-                print('break!')
+                #print('break!')
                 break;
             loss_old = loss
         return w, loss
@@ -117,7 +118,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, SGD=Fal
             w = w - gamma * gradient
             
             if check_stop(loss, loss_old):
-                print('break!')
+                #print('break!')
                 break;
             loss_old = loss
         return w, loss
