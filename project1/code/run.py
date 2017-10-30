@@ -117,7 +117,7 @@ def main(v, V):
 
         ratio_err_train_final += ratio_error_train*prop[r]
         ratio_err_test_final  += ratio_error_test*prop[r]
-        print("Error for subset {r}: {er_tr}, {er_te}".format(r=r, er_tr=ratio_error_train, er_te=ratio_error_test))
+        # print("Error for subset {r}: {er_tr}, {er_te}".format(r=r, er_tr=ratio_error_train, er_te=ratio_error_test))
 
 
     if vverbose:

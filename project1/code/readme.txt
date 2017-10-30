@@ -1,4 +1,7 @@
 README for the project 1 in Machine Learning
+Dylan Bourgeois
+Antoine Mougeot
+Philippe Verbist
 
 
 Where to place the data-sets:
@@ -28,6 +31,8 @@ It can be run like this:
     - run.py -v  -> Produces the output, and shows the mains steps on the screen
     - run.py -V  -> Produces the output, displays a maximum of information
 
+We recommend you tu use: run.py -V
+The output will be: submission_run.csv
 
 Optimization file:
 ——————————————————
@@ -38,3 +43,7 @@ It can be run like this:
     - reg_log_reg_opti.py     -> Produces the output, without displaying any messages
     - reg_log_reg_opti.py -v  -> Produces the output, and shows the mains steps on the screen
     - reg_log_reg_opti.py -V  -> Produces the output, displays a maximum of information
+    - reg_log_reg_opti.py -q  -> Perform the optimisation on a reduces range of parameters. The run takes ~20 minutes.
+
+We recommend you tu use: reg_log_reg_opti.py -q -V
+
