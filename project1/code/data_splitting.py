@@ -5,17 +5,40 @@ from auxiliary import *
 
 
 def init_list_of_objects(size):
+    """
+        Creates a list of empty lists
+
+        Input :
+            - size of the desired list
+
+        Output :
+            - a list of empty list
+    """
     list_of_objects = list()
     for i in range(0,size):
         list_of_objects.append( list() )
     return list_of_objects
 
 
-def split_data_boson(ids, x, y):  
+def split_data_boson(ids, x, y):
+    """
+        Splits a given dataset into 8 subsets
+        For our experiment, we split int the following way :
+            [jet_0, jet_0_mass, jet_1, jet_1_mass, jet_2, jet_2_mass, jet_3, jet_3_mass]
+
+        Inputs :
+            ids
+            x : features matrix
+            y : labels
+
+        Outputs :
+            The inputs, split in the desired fashion
+
+    """
     ids_split = init_list_of_objects(8)
     y_split = init_list_of_objects(8)
     x_split = init_list_of_objects(8)
-    
+
     for i in range(x.shape[0]):
         if x[i,22] == 0:
             j = 0
@@ -73,7 +96,7 @@ def split_data_boson(ids, x, y):
                 ids_split[j+1].append(ids[i])
                 y_split[j+1].append(y[i])
                 x_split[j+1].append(x[i,keep_idx2])
-        
+
         # transform lists in arrays
     for i in range(len(ids_split)):
         ids_split[i] = np.array(ids_split[i])
@@ -81,4 +104,3 @@ def split_data_boson(ids, x, y):
         x_split[i] = np.array(x_split[i])
 
     return ids_split, y_split, x_split
-
