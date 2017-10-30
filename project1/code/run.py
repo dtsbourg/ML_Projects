@@ -67,7 +67,7 @@ def main(v, V):
         prop[r] = len(x[r])/len_tot
         if vverbose:
             print("Training subset {r} represents {prop_r:6.2f}% of the total training set and has {c}% of remaining NaN values".format(
-                  r=r, prop_r=prop[r]*100, c=clean_data_ratio_for_subset))
+                  r=r+1, prop_r=prop[r]*100, c=clean_data_ratio_for_subset))
 
 
     # =====================================
@@ -154,7 +154,7 @@ def main(v, V):
         phi_ukn[r] = build_poly(x_ukn[r], 1)                              # add column of 1's 
         if vverbose:
             print("Testing subset {r} has {c}% of remaining NaN values".format(
-                  r=r, c=clean_data_ratio_for_subset))
+                  r=r+1, c=clean_data_ratio_for_subset))
 
 
     # =============================================

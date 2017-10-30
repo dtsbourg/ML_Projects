@@ -39,11 +39,12 @@ Optimization file:
 
 The script reg_log_reg_opti.py generates a (long) optimisation on the different parameters of the reg_logistic_regression function. Again, the 
 It can be run like this:
-    - reg_log_reg_opti.py -h  -> Does not produce the output. Show the usage for the function
-    - reg_log_reg_opti.py     -> Produces the output, without displaying any messages
-    - reg_log_reg_opti.py -v  -> Produces the output, and shows the mains steps on the screen
-    - reg_log_reg_opti.py -V  -> Produces the output, displays a maximum of information
-    - reg_log_reg_opti.py -q  -> Perform the optimisation on a reduces range of parameters. The run takes ~20 minutes.
+    - optimization.py -h  -> Does not produce the output. Show the usage for the function
+    - optimization.py     -> Produces the output, without displaying any messages
+    - optimization.py -v  -> Produces the output, and shows the mains steps on the screen
+    - optimization.py -V  -> Produces the output, displays a maximum of information
+    - optimization.py -q  -> Perform the optimisation on a reduced range of parameters (but it does not give an optimal solution). The -q run takes ~20 minutes.
+The normal run takes several hours
 
-We recommend you tu use: reg_log_reg_opti.py -q -V
+We recommend you tu use: optimization.py -q -V
 
