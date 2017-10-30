@@ -23,7 +23,7 @@ def main(v, V):
     else:
         verbose=False
         vverbose=False
-        printf("No log messages will be displayed. To see some information, please use the option -v or -V")
+        print("No log messages will be displayed. To see some information, please use the option -v or -V")
 
 
     # =====================
