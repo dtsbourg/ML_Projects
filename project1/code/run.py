@@ -30,6 +30,7 @@ def main(v, V):
     # VARIBALES DECLARATION
     # =====================
     nb_subsets=8
+    np.random.seed(7)
 
 
 
@@ -93,9 +94,9 @@ def main(v, V):
     max_iters = 1000
 
     # hard-coded parameters for jets n°1-8
-    degree = [2, 	3, 	2, 	3, 	3, 	3, 	3, 	3] #[3]
-    gamma  = [1e-6, 	5e-6, 	1e-4, 	1e-6, 	1e-4, 	1e-6,	1e-4, 	5e-6]#[1e-6]   
-    lambda_= [1e-4, 	1e-3, 	10, 	10, 	1e-3, 	1e-3, 	0, 	3e-6]#[0]*8
+    degree = [2,    3,    2,    3,    3,    3,    3,    3] #[3]
+    gamma  = [1e-6, 5e-6, 1e-4, 1e-6, 1e-4, 1e-6, 1e-4, 5e-6]#[1e-6]   
+    lambda_= [1e-4, 1e-3, 10,   10,   1e-3, 1e-3, 0,    3e-6]#[0]*8
 
 
     for r in range(len(x)):
@@ -109,7 +110,7 @@ def main(v, V):
 
         w_initial = np.array([0]*(phi_train.shape[1]))
 
-        w[r],_ = reg_logistic_regression(y_train, phi_train, lambda_[r], w_initial, max_iters, gamma[r])
+        w[r],_ = reg_logistic_regression(y_train, phi_train, lambda_[r], w_initial, max_iters, gamma[r], SGD=False)
 
         # compute error and loss for train and test data
         _, ratio_error_train = compute_classification_error(y_train, phi_train, w[r], logistic_reg=True)

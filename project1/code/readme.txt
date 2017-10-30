@@ -3,6 +3,7 @@ Dylan Bourgeois
 Antoine Mougeot
 Philippe Verbist
 
+/!\ Please use python3 to run the scripts
 
 Where to place the data-sets:
 ————————————————————————————
