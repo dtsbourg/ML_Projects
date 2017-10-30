@@ -88,11 +88,13 @@ def main(v, V):
 
 
     seed = 7
-    degree = 3
     split_ratio = 0.5
-    gamma = 1e-6
     max_iters = 1000
-    lambda_=0
+
+    # hard-coded parameters for jets n°1-8
+    degree = [3]*8
+    gamma  = [1e-6]*8
+    lambda_= [0]*8
 
 
     for r in range(len(x)):
@@ -101,12 +103,12 @@ def main(v, V):
         x_train, x_test, y_train, y_test = split_data(x[r], y[r], split_ratio, seed)
 
         # form train and test data with polynomial basis function
-        phi_train = build_poly(x_train, degree)
-        phi_test  = build_poly(x_test, degree)
+        phi_train = build_poly(x_train, degree[r])
+        phi_test  = build_poly(x_test, degree[r])
 
         w_initial = np.array([0]*(phi_train.shape[1]))
 
-        w[r],_ = reg_logistic_regression(y_train, phi_train, lambda_, w_initial, max_iters, gamma)
+        w[r],_ = reg_logistic_regression(y_train, phi_train, lambda_[r], w_initial, max_iters, gamma[r])
 
         # compute error and loss for train and test data
         _, ratio_error_train = compute_classification_error(y_train, phi_train, w[r], logistic_reg=True)
