@@ -66,8 +66,8 @@ def main(v, V, ps, pl):
         phi[r] = build_poly(x[r], 1)     # add column of 1's
         prop[r] = len(x[r])/len_tot
         if vverbose:
-            print("Training subset {r} represents {prop_r:6.2f}% of the total training set and has {c}% of remaining NaN values".format(
-                  r=r, prop_r=prop[r]*100, c=clean_data_ratio_for_subset))
+            print("Training subset {r} represents {prop_r:6.2f}% of the total training set".format(
+                  r=r, prop_r=prop[r]*100))
 
 
     # =====================================
@@ -104,14 +104,15 @@ def main(v, V, ps, pl):
 
 
     seed=7
-    split_ratio=0.7
+    split_ratio=0.9
     for r in range(len(x)):
         x[r], _, y[r], _ = split_data(x[r], y[r], split_ratio, seed) # reduce size to make optimisation quicker
 
 
-    degrees = [3, 5, 7, 9]
-    gammas = np.logspace(-7, -1, 7)
-    lambdas = np.logspace(-5, 1, 7)
+    ssets = [7]
+    degrees = [3]
+    gammas = np.linspace(5e-6, 5e-5, 5)
+    lambdas = np.logspace(-5.5, -4.5, 5)
 
     ws = []
     ratio_err_trains = []
@@ -129,14 +130,17 @@ def main(v, V, ps, pl):
 
     exp=0
 
-    for r in range(len(x)):
+    for r in ssets:
         k_indices[r] = build_k_indices(y[r], k_fold, seed)
 
     if vverbose:
         print("There will be {exp} experiments".format(exp=len(degrees)*len(gammas)*len(lambdas)))
 
     
-    for r in range(len(x)):
+    for r in ssets:
+        if vverbose:
+            print("-- Learning for subset {ss}".format(ss=r))
+        
         for idx1, degree in enumerate(degrees):
             phi = build_poly(x[r], degree)
             for idx2, gamma in enumerate(gammas):
@@ -148,10 +152,18 @@ def main(v, V, ps, pl):
                      
                     idx_k = np.argmin(error_k)
                     err_np[r, idx1, idx2, idx3] = error_k[idx_k]
+                    
+                    if vverbose:
+                        print("ss={rs}; exp={exp:4d}: k_sel={k}, degree={d}, gamma={g}, lambda={l}, ratio_err={er:.4f}".format(
+                               rs=r, exp=exp, k=idx_k,  
+                               d=degree, g=gamma, l=lambda_,
+                               er=err_np[r, idx1, idx2, idx3]))
+
+                    exp += 1
     
     
     best_params = []
-    for r in range(len(x)):
+    for r in ssets:
         subset_params = {}
         idx_best = np.unravel_index(err_np[r].argmin(), err_np[r].shape)
         d = degrees[idx_best[0]]
@@ -162,7 +174,7 @@ def main(v, V, ps, pl):
         print("Best gamma = {}".format(g))
         print("Best lambda = {}".format(l))
         
-        print("Predicted error = {}".format(err_np[r,d,g,l]))
+        print("Predicted error = {}".format(err_np[r,idx_best[0],idx_best[1],idx_best[2]]))
         
         subset_params['degree'] = d
         subset_params['gamma'] = g
@@ -171,7 +183,6 @@ def main(v, V, ps, pl):
         best_params.append(subset_params)
     
     
-    pickle.dump(ws_np,  open( 'weights_log_reg.p', 'wb' ))
     pickle.dump(err_np,  open( 'errors_log_reg.p', 'wb' ))
     pickle.dump(best_params, open( 'best_params.p', 'wb' ))
 

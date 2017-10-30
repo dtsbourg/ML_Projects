@@ -100,7 +100,7 @@ print(" --> Ridge        : Succeed ratio={sr:5.2f}%, lambda={l}".format(sr=(1.-e
 
 # Logistic regression
 
-max_iters = 500
+max_iters = 1000
 gamma = 1e-6
 
 w_LR, _ = logistic_regression(y_train, tx_train, w_initial, max_iters, gamma)
@@ -112,8 +112,8 @@ print(" --> Logistic     : Succeed ratio={sr:5.2f}%, gamma={g}, max_iter={mi}".f
 
 # Regularized Logistic regression
 
-max_iters = 500
-gamma = 1e-6
+max_iters = 1000
+gamma = 1e-5
 lambda_ = 0.01
 
 w_LR_reg, _ = reg_logistic_regression(y_train, tx_train, lambda_, w_initial, max_iters, gamma)

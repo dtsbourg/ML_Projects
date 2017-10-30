@@ -23,6 +23,7 @@ def main(v, V):
     else:
         verbose=False
         vverbose=False
+        printf("No log messages will be displayed. To see some information, please use the option -v or -V")
 
 
     # =====================
@@ -88,13 +89,13 @@ def main(v, V):
 
 
     seed = 7
-    split_ratio = 0.5
+    split_ratio = 0.7
     max_iters = 1000
 
     # hard-coded parameters for jets n°1-8
-    degree = [3]*8
-    gamma  = [1e-6]*8
-    lambda_= [0]*8
+    degree = [2, 	3, 	2, 	3, 	3, 	3, 	3, 	3] #[3]
+    gamma  = [1e-6, 	5e-6, 	1e-4, 	1e-6, 	1e-4, 	1e-6,	1e-4, 	5e-6]#[1e-6]   
+    lambda_= [1e-4, 	1e-3, 	10, 	10, 	1e-3, 	1e-3, 	0, 	3e-6]#[0]*8
 
 
     for r in range(len(x)):
@@ -116,6 +117,7 @@ def main(v, V):
 
         ratio_err_train_final += ratio_error_train*prop[r]
         ratio_err_test_final  += ratio_error_test*prop[r]
+        print("Error for subset {r}: {er_tr}, {er_te}".format(r=r, er_tr=ratio_error_train, er_te=ratio_error_test))
 
 
     if vverbose:
@@ -169,7 +171,7 @@ def main(v, V):
     for r in range(len(x_ukn)):
         if vverbose:
             print("Evaluate labels for subset {r}/8".format(r=r+1))
-        phi_ukn[r] = build_poly(x_ukn[r], degree) 
+        phi_ukn[r] = build_poly(x_ukn[r], degree[r]) 
         y_ukn[r] = predict_labels(w[r], phi_ukn[r], logistic_reg=True)
         y_ukn[r][y_ukn[r]==0] = -1
 
