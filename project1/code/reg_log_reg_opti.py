@@ -12,7 +12,7 @@ import argparse
 
 
 
-def main(v, V, ps, pl):
+def main(v, V, q):
     
     verbose=True
     vverbose=True
@@ -109,10 +109,15 @@ def main(v, V, ps, pl):
         x[r], _, y[r], _ = split_data(x[r], y[r], split_ratio, seed) # reduce size to make optimisation quicker
 
 
-    ssets = [7]
-    degrees = [3]
-    gammas = np.linspace(5e-6, 5e-5, 5)
-    lambdas = np.logspace(-5.5, -4.5, 5)
+    ssets = [0, 1, 2, 3, 4, 5, 6, 7]
+    degrees = [2, 3, 4, 5]
+    gammas = np.logspace(-7, -1, 30)
+    lambdas = np.logspace(-5, 1, 30)
+    if q:
+        ssets = [0, 1, 2, 3, 4, 5, 6, 7]
+        degrees = [3]
+        gammas = np.logspace(-7, -1, 2)
+        lambdas = np.logspace(-5, 1, 2)
 
     ws = []
     ratio_err_trains = []
@@ -134,7 +139,7 @@ def main(v, V, ps, pl):
         k_indices[r] = build_k_indices(y[r], k_fold, seed)
 
     if vverbose:
-        print("There will be {exp} experiments".format(exp=len(degrees)*len(gammas)*len(lambdas)))
+        print("There will be {exp} experiments for each subset".format(exp=len(degrees)*len(gammas)*len(lambdas)))
 
     
     for r in ssets:
@@ -191,10 +196,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Perform optimization on the parameters of reg_logistic_regression')
     parser.add_argument('-v', action='store_true', help='Show some steps', default=False)
     parser.add_argument('-V', action='store_true', help='Show a lot of steps', default=False)
-    parser.add_argument('-ps', action='store_true', help='Store data to pickle', default=False)
-    parser.add_argument('-pl', action='store_true', help='Load data from pickle', default=False)
+    parser.add_argument('-q', action='store_true', help='Run a quick optimisation (reduce the search grid, the optimum is maybe not found)', default=False)
+    
     args = parser.parse_args()
 
-    main(args.v, args.V, args.ps, args.pl)
+    main(args.v, args.V, args.q)
         
               
