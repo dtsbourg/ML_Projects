@@ -51,7 +51,7 @@ def main(v, V, ps, pl):
                           # (used to evaluate the performances of the estimator 
 
 
-    ids[0], y[0], X[0] = load_csv_data('train.csv') # load the data (no subset)
+    ids[0], y[0], X[0] = load_csv_data('../data/train.csv') # load the data (no subset)
     len_tot = X[0].shape[0]
 
     if verbose:
@@ -62,12 +62,12 @@ def main(v, V, ps, pl):
 
     for r in range(len(X)):
         x[r], _, _ = standardize(X[r])    # standardize
-        clean_data_ratio_for_subset = len([x for x in x[r] if -999. in x])/len(x[r])*100
+        #clean_data_ratio_for_subset = len([x for x in x[r] if -999. in x])/len(x[r])*100
         phi[r] = build_poly(x[r], 1)     # add column of 1's
         prop[r] = len(x[r])/len_tot
         if vverbose:
-            print("Training subset {r} represents {prop_r:6.2f}% of the total training set and has {c}% of remaining NaN values".format(
-                  r=r, prop_r=prop[r]*100, c=clean_data_ratio_for_subset))
+            print("Training subset {r} represents {prop_r:6.2f}% of the total training set".format(
+                  r=r, prop_r=prop[r]*100))
 
 
     # =====================================
@@ -104,23 +104,23 @@ def main(v, V, ps, pl):
 
 
     seed=7
-    split_ratio=0.4
+    split_ratio=0.9
     for r in range(len(x)):
         x[r], _, y[r], _ = split_data(x[r], y[r], split_ratio, seed) # reduce size to make optimisation quicker
 
 
-    degrees = [1, 2, 3, 4, 5]
-    gammas = np.logspace(-7, -1, 15)
-    lambdas = np.logspace(-5, 1, 15)
-
-    #degrees = [2]
-    #gammas = [1e-6, 1e-5]
-    #lambdas = [0.001, 0.01]
-
+    ssets = [7]
+    degrees = [3]
+    gammas = np.linspace(5e-6, 5e-5, 5)
+    lambdas = np.logspace(-5.5, -4.5, 5)
 
     ws = []
     ratio_err_trains = []
     ratio_err_tests = []
+    errs = []
+    
+    ws_np = np.empty((len(x),len(degrees),len(gammas), len(lambdas)))
+    err_np = np.empty((len(x),len(degrees),len(gammas), len(lambdas)))
 
     k_fold = 4
     w_k_fold=[0]*k_fold
@@ -130,70 +130,61 @@ def main(v, V, ps, pl):
 
     exp=0
 
-    for r in range(len(x)):
+    for r in ssets:
         k_indices[r] = build_k_indices(y[r], k_fold, seed)
 
     if vverbose:
         print("There will be {exp} experiments".format(exp=len(degrees)*len(gammas)*len(lambdas)))
 
-
-    for idx1, degree in enumerate(degrees):
-        for r in range(len(x)):
-            phi[r]=build_poly(x[r], degree)
-
-        for idx2, gamma in enumerate(gammas):
-            for idx3, lambda_ in enumerate(lambdas):
-                for k in range(k_fold):
-                    ratio_err_trains_k_fold[k]= 0.0
-                    ratio_err_tests_k_fold[k] = 0.0
-                    for r in range(len(x)):
-                        w[r], ratio_error_train, ratio_error_test = reg_logistic_regression_split_k_fold(
-                            phi[r], y[r], gamma, lambda_, k_indices[r], k)
-
-                        ratio_err_trains_k_fold[k]+=ratio_error_train*prop[r]
-                        ratio_err_tests_k_fold[k] +=ratio_error_test*prop[r]
-
-                    w_k_fold[k]=copy.copy(w)
-
-                idx_k=np.argmin(ratio_err_tests_k_fold)
-                ws.append(w_k_fold[idx_k])
-                ratio_err_trains.append(ratio_err_trains_k_fold[idx_k])
-                ratio_err_tests.append(ratio_err_tests_k_fold[idx_k])
-                
-                if vverbose:
-                    print("{exp}: k_sel={k}, degree={d}, gamma={g}, lambda={l}, ratio_err_train={er_tr:.3f}, ratio_err_test={er_te:.3f}".format(
-                           exp=exp, k=idx_k,  
-                           d=degree, g=gamma, l=lambda_,
-                           er_tr=ratio_err_trains[exp], er_te=ratio_err_tests[exp]))
-
-                exp += 1
-
-
-
-    idx = np.argmin(ratio_err_tests)
-    w_reg_log_reg = ws[idx]
-
-
-    idx_split = int(idx/(len(degrees)*len(gammas)*len(lambdas)))
-    idx_degree_gamma_lamb = idx%(len(degrees)*len(gammas)*len(lambdas))
-    idx_degree = int(idx_degree_gamma_lamb/(len(gammas)*len(lambdas)))
-    idx_gamma_lamb = idx_degree_gamma_lamb%(len(gammas)*len(lambdas))
-    idx_gamma = int(idx_gamma_lamb/len(gammas))
-    idx_lamb = (idx_gamma_lamb%len(lambdas))
-
-
-    if verbose:
-        print("Take experiments {i} out of {tot} experiments, error tr={er_tr:.3f}, error test={er_te:.3f}, k_fold={k_fold} degree={deg}, gamma={g}".format(
-               i=idx, tot=len(ws), er_tr=ratio_err_trains[idx], er_te=ratio_err_tests[idx], 
-               k_fold=k_fold,  deg=degrees[idx_degree], g=gammas[idx_gamma]))
-
-
-
-
-    if verbose:
-        print(" - Learning done. Expected success ratio: {sr}".format(sr=1.0-ratio_err_tests[idx]))
+    
+    for r in ssets:
+        if vverbose:
+            print("-- Learning for subset {ss}".format(ss=r))
         
-    pickle.dump(w_reg_log_reg, open( 'w_reg_log_reg.p', 'wb' ))
+        for idx1, degree in enumerate(degrees):
+            phi = build_poly(x[r], degree)
+            for idx2, gamma in enumerate(gammas):
+                for idx3, lambda_ in enumerate(lambdas):
+                    w_k = []; error_k = []
+                    for k in range(k_fold):
+                        w, ratio_error_train, ratio_error_test = reg_logistic_regression_split_k_fold(phi, y[r], gamma, lambda_, k_indices[r], k)
+                        error_k.append(((ratio_error_train+ratio_error_test)/2.0))
+                     
+                    idx_k = np.argmin(error_k)
+                    err_np[r, idx1, idx2, idx3] = error_k[idx_k]
+                    
+                    if vverbose:
+                        print("ss={rs}; exp={exp:4d}: k_sel={k}, degree={d}, gamma={g}, lambda={l}, ratio_err={er:.4f}".format(
+                               rs=r, exp=exp, k=idx_k,  
+                               d=degree, g=gamma, l=lambda_,
+                               er=err_np[r, idx1, idx2, idx3]))
+
+                    exp += 1
+    
+    
+    best_params = []
+    for r in ssets:
+        subset_params = {}
+        idx_best = np.unravel_index(err_np[r].argmin(), err_np[r].shape)
+        d = degrees[idx_best[0]]
+        g = gammas[idx_best[1]]
+        l = lambdas[idx_best[2]]
+        print("Subset # {}".format(r))
+        print("Best degree = {}".format(d))
+        print("Best gamma = {}".format(g))
+        print("Best lambda = {}".format(l))
+        
+        print("Predicted error = {}".format(err_np[r,idx_best[0],idx_best[1],idx_best[2]]))
+        
+        subset_params['degree'] = d
+        subset_params['gamma'] = g
+        subset_params['lambda'] = l
+
+        best_params.append(subset_params)
+    
+    
+    pickle.dump(err_np,  open( 'errors_log_reg.p', 'wb' ))
+    pickle.dump(best_params, open( 'best_params.p', 'wb' ))
 
     
 if __name__ == "__main__":
