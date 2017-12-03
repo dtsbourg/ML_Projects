@@ -8,10 +8,31 @@ plt.style.use('ggplot')
 
 import numpy as np
 
-def fit(model, train_x, train_y, test_x, test_y, epochs=10, batch_size=512):
+def fit(model, train_x, train_y, test_x, test_y, user_embedding=False, item_embedding=False, epochs=10, batch_size=512):
+    training_data = [train_x.Item, train_x.User]
+    test_data = [test_x.Item, test_x.User]
+
+    if item_embedding is True:
+        i_emb = np.load('../data/embeddings/items_t_sne.npy')
+        train_emb_i = u_emb[train_x.Item - 1]
+        training_data += [train_emb_i]
+
+        i_emb_test = np.load('../data/embeddings/items_t_sne_test.npy')
+        test_emb_i = i_emb_test[test_x.Item - 1]
+        test_data += [test_emb_i]
+
+    if user_embedding is True:
+        u_emb = np.load('../data/embeddings/users_t_sne.npy')
+        train_emb_u = u_emb[train_x.User - 1]
+        training_data += [train_emb_u]
+
+        u_emb_test = np.load('../data/embeddings/users_t_sne_test.npy')
+        test_emb_u = u_emb_test[test_x.User - 1]
+        test_data += [test_emb_u]
+
     history = model.fit(
-        [train_x.Item, train_x.User], train_y,
-        validation_data=([test_x.Item, test_x.User], test_y),
+        training_data, train_y,
+        validation_data=(test_data, test_y),
         batch_size=batch_size,
         epochs=epochs
     )
