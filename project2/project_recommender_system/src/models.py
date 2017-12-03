@@ -16,9 +16,12 @@ class Network(object):
         self.n_test_samples  = n_test_samples
         self.optimizer = optimizer
         self.loss = loss
-        self.model = None
+        self.model = self.model_func()
         self.model_type = "Basic"
         self.descr = self.description_str()
+
+    def model_func(self):
+        raise NotImplementedError()
 
     def description_str(self, suffix="", uid=False):
         model_type = self.model_type + "_"
@@ -36,10 +39,9 @@ class ShallowNetwork(Network):
     """docstring for ShallowNetwork."""
     def __init__(self, *args, **kwargs):
         super(ShallowNetwork, self).__init__(*args, **kwargs)
-        self.model = self.shallow_net()
         self.model_type = "Shallow"
 
-    def shallow_net(self):
+    def model_func(self):
         input_i = layers.Input(shape=[1])
         i = layers.Embedding(self.n_items+1, self.k_features)(input_i)
         i = layers.Flatten()(i)
@@ -59,6 +61,42 @@ class ShallowNetwork(Network):
         nn = layers.Dense(128, activation='relu')(nn)
 
         output = layers.Dense(self.n_classes, activation='softmax')(nn)
+
+        model = models.Model([input_i, input_u], output)
+        model.compile(optimizer=self.optimizer, loss=self.loss)
+        return model
+
+class DeepNetwork(Network):
+    """docstring for ShallowNetwork."""
+    def __init__(self, *args, **kwargs):
+        super(DeepNetwork, self).__init__(*args, **kwargs)
+        self.model_type = "Simple_Deep"
+
+    def model_func(self):
+        input_i = layers.Input(shape=[1])
+        i = layers.Embedding(self.n_items + 1, self.k_features)(input_i)
+        i = layers.Flatten()(i)
+        i = layers.normalization.BatchNormalization()(i)
+
+        input_u = layers.Input(shape=[1])
+        u = layers.Embedding(self.n_users + 1, self.k_features)(input_u)
+        u = layers.Flatten()(u)
+        u = layers.normalization.BatchNormalization()(u)
+
+        nn = layers.concatenate([i, u])
+
+        nn = layers.Dense(1024, activation='relu')(nn)
+        nn = layers.Dropout(0.5)(nn)
+        nn = layers.normalization.BatchNormalization()(nn)
+        nn = layers.Dense(512, activation='relu')(nn)
+        nn = layers.Dropout(0.5)(nn)
+        nn = layers.normalization.BatchNormalization()(nn)
+        nn = layers.Dense(256, activation='relu')(nn)
+        nn = layers.Dropout(0.5)(nn)
+        nn = layers.normalization.BatchNormalization()(nn)
+        nn = layers.Dense(128, activation='relu')(nn)
+
+        output = layers.Dense(5, activation='softmax')(nn)
 
         model = models.Model([input_i, input_u], output)
         model.compile(optimizer=self.optimizer, loss=self.loss)
