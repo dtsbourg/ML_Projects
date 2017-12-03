@@ -18,7 +18,7 @@ def load_data(path='../data/data_train.csv', categorical=True, test_size=0.05, t
         categorical_test_y[np.arange(test_x.shape[0]), test_x.Prediction - 1] = 1
         return train_x, categorical_train_y, test_x, categorical_test_y
     else:
-        return train_x, train_x.Ratings, test_x, test_x.Ratings
+        return train_x, train_x.Prediction, test_x, test_x.Prediction
 
 def load_subset(categorical=True):
     return load_data(categorical=categorical)
