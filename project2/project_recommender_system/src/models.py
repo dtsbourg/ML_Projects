@@ -6,12 +6,12 @@ import datetime
 
 class Network(object):
     """docstring for Network."""
-    def __init__(self, k_features=64, n_items=10000, n_users=1000, n_train_samples=10, n_test_samples=10, optimizer='sgd', loss='categorical_crossentropy'):
+    def __init__(self, k_features=64, n_items=10000, n_users=1000, n_train_samples=10, n_test_samples=10, n_classes=5, optimizer='sgd', loss='categorical_crossentropy'):
         super(Network, self).__init__()
         self.k_features = k_features
         self.n_items = n_items
         self.n_users = n_users
-        self.n_classes = 5
+        self.n_classes = n_classes
         self.n_train_samples = n_train_samples
         self.n_test_samples  = n_test_samples
         self.optimizer = optimizer
@@ -99,5 +99,42 @@ class DeepNetwork(Network):
         output = layers.Dense(5, activation='softmax')(nn)
 
         model = models.Model([input_i, input_u], output)
+        model.compile(optimizer=self.optimizer, loss=self.loss)
+        return model
+
+class DenseNetwork(Network):
+    """docstring for ShallowNetwork."""
+    def __init__(self, *args, **kwargs):
+        super(DenseNetwork, self).__init__(*args, **kwargs)
+        self.model_type = "Simple_Dense"
+        if self.n_classes > 1:
+            print("[ERROR] Dense Netorks don't expect categorical data.")
+            print("\t Please set categorical=false when creating the train/test split.")
+            raise Exception("Unexpected categorical data in Dense Network.")
+
+    def model_func(self):
+        input_i = layers.Input(shape=[1])
+        i = layers.Embedding(self.n_items + 1, self.k_features)(input_i)
+        i = layers.Reshape((self.k_features,))(i)
+        i = layers.normalization.BatchNormalization()(i)
+
+        input_u = layers.Input(shape=[1])
+        u = layers.Embedding(self.n_users + 1, self.k_features)(input_u)
+        u = layers.Flatten()(u)
+        u = layers.Reshape((self.k_features,))(u)
+        u = layers.normalization.BatchNormalization()(u)
+
+        nn = layers.concatenate([i, u])
+        nn = layers.Dropout(0.5)(nn)
+        nn = layers.Dense(self.k_features, activation='relu')(nn)
+        nn = layers.Dropout(0.5)(nn)
+
+        output =  layers.Dense(self.n_classes, activation='linear')(nn)
+
+        model = models.Model([input_i, input_u], output)
+        if self.loss == 'categorical_crossentropy':
+            print("[WARNING] Categorical Cross Entropy does not make sense in this case.")
+            print("\t Changing to MSE")
+            self.loss='mean_squared_error'
         model.compile(optimizer=self.optimizer, loss=self.loss)
         return model
