@@ -4,6 +4,8 @@ from keras import models
 from keras import optimizers
 import datetime
 
+import numpy as np
+
 class Network(object):
     """docstring for Network."""
     def __init__(self, k_features=64, n_items=10000, n_users=1000, n_train_samples=10, n_test_samples=10, n_classes=5, optimizer='sgd', loss='categorical_crossentropy'):
@@ -19,6 +21,7 @@ class Network(object):
         self.model = self.model_func()
         self.model_type = "Basic"
         self.descr = self.description_str()
+        self.embed_dim = None
 
     def model_func(self):
         raise NotImplementedError()
@@ -67,7 +70,7 @@ class ShallowNetwork(Network):
         return model
 
 class DeepNetwork(Network):
-    """docstring for ShallowNetwork."""
+    """docstring for DeepNetwork."""
     def __init__(self, *args, **kwargs):
         super(DeepNetwork, self).__init__(*args, **kwargs)
         self.model_type = "Simple_Deep"
@@ -99,6 +102,50 @@ class DeepNetwork(Network):
         output = layers.Dense(5, activation='softmax')(nn)
 
         model = models.Model([input_i, input_u], output)
+        model.compile(optimizer=self.optimizer, loss=self.loss, metrics=['accuracy', 'categorical_accuracy', ])
+        return model
+
+class DeepNetworkFeat(Network):
+    """docstring for DeepNetworkFeat."""
+    def __init__(self, *args, **kwargs):
+        super(DeepNetworkFeat, self).__init__(*args, **kwargs)
+        self.model_type = "Deep_Feat"
+
+    def model_func(self):
+        input_i = layers.Input(shape=[1])
+        i = layers.Embedding(self.n_items + 1, self.k_features)(input_i)
+        i = layers.Flatten()(i)
+        i = layers.normalization.BatchNormalization()(i)
+
+        input_u = layers.Input(shape=[1])
+        u = layers.Embedding(self.n_users + 1, self.k_features)(input_u)
+        u = layers.Flatten()(u)
+        u = layers.normalization.BatchNormalization()(u)
+
+        # TODO : Magic number
+        input_i_emb = layers.Input(shape=[3])
+        im = layers.normalization.BatchNormalization()(input_i_emb)
+
+        # TODO : Magic number
+        input_u_emb = layers.Input(shape=[3])
+        um = layers.normalization.BatchNormalization()(input_u_emb)
+
+        nn = layers.concatenate([i, u, im, um])
+
+        nn = layers.Dense(1024, activation='relu')(nn)
+        nn = layers.Dropout(0.5)(nn)
+        nn = layers.normalization.BatchNormalization()(nn)
+        nn = layers.Dense(512, activation='relu')(nn)
+        nn = layers.Dropout(0.5)(nn)
+        nn = layers.normalization.BatchNormalization()(nn)
+        nn = layers.Dense(256, activation='relu')(nn)
+        nn = layers.Dropout(0.5)(nn)
+        nn = layers.normalization.BatchNormalization()(nn)
+        nn = layers.Dense(128, activation='relu')(nn)
+
+        output = layers.Dense(5, activation='softmax')(nn)
+
+        model = models.Model([input_i, input_u, input_i_emb, input_u_emb], output)
         model.compile(optimizer=self.optimizer, loss=self.loss, metrics=['accuracy', 'categorical_accuracy', ])
         return model
 
