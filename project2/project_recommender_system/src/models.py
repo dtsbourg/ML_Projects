@@ -99,7 +99,7 @@ class DeepNetwork(Network):
         output = layers.Dense(5, activation='softmax')(nn)
 
         model = models.Model([input_i, input_u], output)
-        model.compile(optimizer=self.optimizer, loss=self.loss)
+        model.compile(optimizer=self.optimizer, loss=self.loss, metrics=['accuracy', 'categorical_accuracy', ])
         return model
 
 class DenseNetwork(Network):

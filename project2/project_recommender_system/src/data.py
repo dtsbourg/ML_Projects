@@ -25,3 +25,11 @@ def load_subset(categorical=True):
 
 def load_full(categorical=True, test_split=0.2):
     return load_data(categorical=categorical, test_size=test_split, train_size=1.)
+
+def load_submission():
+    path = '../data/sampleSubmission.csv'
+    ratings = pd.read_csv(path, dtype={'Prediction': np.int})
+    pos = ratings.Id.str.extract('r([0-9]+)_c([0-9]+)', expand=True)
+    ratings['User'] = pos[0].astype(np.int)
+    ratings['Item'] = pos[1].astype(np.int)
+    return ratings
