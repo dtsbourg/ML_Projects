@@ -2,6 +2,7 @@ import keras
 from keras import layers
 from keras import models
 from keras import optimizers
+from keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
 
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
@@ -30,12 +31,19 @@ def fit(model, train_x, train_y, test_x, test_y, user_embedding=False, item_embe
         test_emb_u = u_emb_test[test_x.User - 1]
         test_data += [test_emb_u]
 
-    history = model.fit(
+    callbacks = [EarlyStopping('val_loss', patience=5),
+                 ModelCheckpoint('../res/model/'+model.description_str(), save_best_only=True)]
+
+    history = model.model.fit(
         training_data, train_y,
         validation_data=(test_data, test_y),
         batch_size=batch_size,
-        epochs=epochs
+        epochs=epochs,
+        callbacks=callbacks
     )
+
+    model.descr = model.description_str(suffix= str(max(history.epoch)+1) + "_epochs_", uid=True)
+
     return history
 
 def plot(description, history, show=False):

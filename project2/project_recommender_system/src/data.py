@@ -8,7 +8,7 @@ def load_data(path='../data/data_train.csv', categorical=True, test_size=0.05, t
     ratings['User'] = pos[0].astype(np.int)
     ratings['Item'] = pos[1].astype(np.int)
 
-    train_x, test_x = model_selection.train_test_split(ratings, test_size=0.05, train_size=0.1)
+    train_x, test_x = model_selection.train_test_split(ratings, test_size=test_size, train_size=train_size)
 
     if categorical is True:
         categorical_train_y = np.zeros([train_x.shape[0], 5])
@@ -20,11 +20,11 @@ def load_data(path='../data/data_train.csv', categorical=True, test_size=0.05, t
     else:
         return train_x, train_x.Prediction, test_x, test_x.Prediction
 
-def load_subset(categorical=True):
+def load_subset(categorical=True, test_size=0.05, train_size=0.2):
     return load_data(categorical=categorical)
 
 def load_full(categorical=True, test_split=0.2):
-    return load_data(categorical=categorical, test_size=test_split, train_size=1.)
+    return load_data(categorical=categorical, test_size=test_split, train_size=None)
 
 def load_submission():
     path = '../data/sampleSubmission.csv'

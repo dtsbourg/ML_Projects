@@ -98,11 +98,14 @@ class DeepNetwork(Network):
         nn = layers.Dropout(0.5)(nn)
         nn = layers.normalization.BatchNormalization()(nn)
         nn = layers.Dense(128, activation='relu')(nn)
+        nn = layers.Dropout(0.5)(nn)
+        nn = layers.normalization.BatchNormalization()(nn)
+        nn = layers.Dense(64, activation='relu')(nn)
 
         output = layers.Dense(5, activation='softmax')(nn)
 
         model = models.Model([input_i, input_u], output)
-        model.compile(optimizer=self.optimizer, loss=self.loss, metrics=['accuracy', 'categorical_accuracy', ])
+        model.compile(optimizer=self.optimizer, loss=self.loss, metrics=['accuracy'])
         return model
 
 class DeepNetworkFeat(Network):
@@ -146,7 +149,7 @@ class DeepNetworkFeat(Network):
         output = layers.Dense(5, activation='softmax')(nn)
 
         model = models.Model([input_i, input_u, input_i_emb, input_u_emb], output)
-        model.compile(optimizer=self.optimizer, loss=self.loss, metrics=['accuracy', 'categorical_accuracy', ])
+        model.compile(optimizer=self.optimizer, loss=self.loss, metrics=['accuracy'])
         return model
 
 class DenseNetwork(Network):
