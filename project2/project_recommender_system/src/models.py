@@ -112,7 +112,7 @@ class DeepNetworkFeat(Network):
     """docstring for DeepNetworkFeat."""
     def __init__(self, *args, **kwargs):
         super(DeepNetworkFeat, self).__init__(*args, **kwargs)
-        self.model_type = "Deep_Feat"
+        self.model_type = "Deep_Full_Feat"
 
     def model_func(self):
         input_i = layers.Input(shape=[1])
@@ -126,14 +126,22 @@ class DeepNetworkFeat(Network):
         u = layers.normalization.BatchNormalization()(u)
 
         # TODO : Magic number
-        input_i_emb = layers.Input(shape=[3])
-        im = layers.normalization.BatchNormalization()(input_i_emb)
+        input_i_tsne = layers.Input(shape=[3])
+        im_tsne = layers.normalization.BatchNormalization()(input_i_tsne)
+        input_u_tsne = layers.Input(shape=[3])
+        um_tsne = layers.normalization.BatchNormalization()(input_u_tsne)
 
-        # TODO : Magic number
-        input_u_emb = layers.Input(shape=[3])
-        um = layers.normalization.BatchNormalization()(input_u_emb)
+        input_i_spectral = layers.Input(shape=[128])
+        im_spectral = layers.normalization.BatchNormalization()(input_i_spectral)
+        input_u_spectral = layers.Input(shape=[128])
+        um_spectral = layers.normalization.BatchNormalization()(input_u_spectral)
 
-        nn = layers.concatenate([i, u, im, um])
+        input_i_lle = layers.Input(shape=[128])
+        im_lle = layers.normalization.BatchNormalization()(input_i_lle)
+        input_u_lle = layers.Input(shape=[128])
+        um_lle = layers.normalization.BatchNormalization()(input_u_lle)
+
+        nn = layers.concatenate([i, u, im_tsne, um_tsne, im_spectral, um_spectral, im_lle, um_lle])
 
         nn = layers.Dense(1024, activation='relu')(nn)
         nn = layers.Dropout(0.5)(nn)
@@ -148,7 +156,7 @@ class DeepNetworkFeat(Network):
 
         output = layers.Dense(5, activation='softmax')(nn)
 
-        model = models.Model([input_i, input_u, input_i_emb, input_u_emb], output)
+        model = models.Model([input_i, input_u, input_i_tsne, input_u_tsne, input_i_spectral, input_u_spectral, input_i_lle, input_u_lle], output)
         model.compile(optimizer=self.optimizer, loss=self.loss, metrics=['accuracy'])
         return model
 
