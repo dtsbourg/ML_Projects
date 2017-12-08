@@ -4,6 +4,8 @@ from keras import models
 from keras import optimizers
 from keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
 
+from models import DeepNetworkFeatReg
+
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
@@ -14,19 +16,20 @@ def fit(model, train_x, train_y, test_x, test_y, embedding=False, epochs=10, bat
     test_data = [test_x.Item, test_x.User]
 
     if embedding is True:
-        ## t-SNE Embeddings
-        i_emb = np.load('../data/embeddings/items_t_sne_full.npy')
-        train_emb_i = i_emb[train_x.Item - 1]
-        training_data += [train_emb_i]
-        test_emb_i = i_emb[test_x.Item - 1]
-        test_data += [test_emb_i]
+        if not isinstance(model, DeepNetworkFeatReg):
+            ## t-SNE Embeddings
+            i_emb = np.load('../data/embeddings/items_t_sne_full.npy')
+            train_emb_i = i_emb[train_x.Item - 1]
+            training_data += [train_emb_i]
+            test_emb_i = i_emb[test_x.Item - 1]
+            test_data += [test_emb_i]
 
-        ## t-SNE Embeddings
-        u_emb = np.load('../data/embeddings/users_t_sne_full.npy')
-        train_emb_u = u_emb[train_x.User - 1]
-        training_data += [train_emb_u]
-        test_emb_u = u_emb[test_x.User - 1]
-        test_data += [test_emb_u]
+            ## t-SNE Embeddings
+            u_emb = np.load('../data/embeddings/users_t_sne_full.npy')
+            train_emb_u = u_emb[train_x.User - 1]
+            training_data += [train_emb_u]
+            test_emb_u = u_emb[test_x.User - 1]
+            test_data += [test_emb_u]
 
         ## Spectral embeddings
         i_emb = np.load('../data/embeddings/items_spectral_full.npy')
