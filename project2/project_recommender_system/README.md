@@ -118,3 +118,7 @@ A list of things to do in order to get a better idea of what the data is like an
 ### Misc
 
 * A common method to compute the test set is to use *leave k-out* where we randomly remove k ratings for each user
+
+### Report
+
+Link : [Overleaf](https://www.overleaf.com/12736163qhwvvbsxkwdx)
