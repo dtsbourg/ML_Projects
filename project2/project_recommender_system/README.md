@@ -12,7 +12,13 @@ You can then declare your model, train and evaluate it :
 
 ```bash
 python3 neural.py
-```  
+```
+
+To explore the data and to generate the corresponding figures:
+```bash
+python3 exploration.py
+```
+The very first run might take some times. The resulting pictures can be found in ```res/img/```.
 
 > TODO : Document the API
 
