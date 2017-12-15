@@ -4,7 +4,7 @@ from keras import models
 from keras import optimizers
 from keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
 
-from models import DeepNetworkFeatReg
+from models import DeepNetworkFeatReg, DenseNetwork
 
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
@@ -16,44 +16,57 @@ def fit(model, train_x, train_y, test_x, test_y, embedding=False, epochs=10, bat
     test_data = [test_x.Item, test_x.User]
 
     if embedding is True:
-        if not isinstance(model, DeepNetworkFeatReg):
-            ## t-SNE Embeddings
-            i_emb = np.load('../data/embeddings/items_t_sne_full.npy')
-            train_emb_i = i_emb[train_x.Item - 1]
-            training_data += [train_emb_i]
-            test_emb_i = i_emb[test_x.Item - 1]
-            test_data += [test_emb_i]
-
-            ## t-SNE Embeddings
-            u_emb = np.load('../data/embeddings/users_t_sne_full.npy')
-            train_emb_u = u_emb[train_x.User - 1]
-            training_data += [train_emb_u]
-            test_emb_u = u_emb[test_x.User - 1]
-            test_data += [test_emb_u]
-
         ## Spectral embeddings
-        i_emb = np.load('../data/embeddings/items_spectral_full.npy')
+        i_emb = np.load('../data/embeddings/items_spectral_64.npy')
         train_emb_i = i_emb[train_x.Item - 1]
         training_data += [train_emb_i]
         test_emb_i = i_emb[test_x.Item - 1]
         test_data += [test_emb_i]
 
-        ## Spectral Embedding
-        u_emb = np.load('../data/embeddings/users_spectral_full.npy')
+        ## Spectral embeddings
+        u_emb = np.load('../data/embeddings/users_spectral_64.npy')
         train_emb_u = u_emb[train_x.User - 1]
         training_data += [train_emb_u]
         test_emb_u = u_emb[test_x.User - 1]
         test_data += [test_emb_u]
 
         ## LLE embeddings
-        i_emb = np.load('../data/embeddings/items_lle_full.npy')
+        i_emb = np.load('../data/embeddings/items_lle_64.npy')
         train_emb_i = i_emb[train_x.Item - 1]
         training_data += [train_emb_i]
         test_emb_i = i_emb[test_x.Item - 1]
         test_data += [test_emb_i]
 
-        ## LLE Embedding
-        u_emb = np.load('../data/embeddings/users_lle_full.npy')
+        ## LLE embeddings
+        u_emb = np.load('../data/embeddings/users_lle_64.npy')
+        train_emb_u = u_emb[train_x.User - 1]
+        training_data += [train_emb_u]
+        test_emb_u = u_emb[test_x.User - 1]
+        test_data += [test_emb_u]
+
+        ## FA embeddings
+        i_emb = np.load('../data/embeddings/items_fa_64.npy')
+        train_emb_i = i_emb[train_x.Item - 1]
+        training_data += [train_emb_i]
+        test_emb_i = i_emb[test_x.Item - 1]
+        test_data += [test_emb_i]
+
+        ## FA embeddings
+        u_emb = np.load('../data/embeddings/users_fa_64.npy')
+        train_emb_u = u_emb[train_x.User - 1]
+        training_data += [train_emb_u]
+        test_emb_u = u_emb[test_x.User - 1]
+        test_data += [test_emb_u]
+
+        ## NMF embeddings
+        i_emb = np.load('../data/embeddings/items_nmf_64.npy')
+        train_emb_i = i_emb[train_x.Item - 1]
+        training_data += [train_emb_i]
+        test_emb_i = i_emb[test_x.Item - 1]
+        test_data += [test_emb_i]
+
+        ## NMF embeddings
+        u_emb = np.load('../data/embeddings/users_nmf_64.npy')
         train_emb_u = u_emb[train_x.User - 1]
         training_data += [train_emb_u]
         test_emb_u = u_emb[test_x.User - 1]
@@ -87,5 +100,7 @@ def predict(categorical_predictions, voting='weighted'):
     if voting=='absolute':
         return [np.argmax(p)+1 for p in categorical_predictions]
     elif voting=='weighted':
-        weighted = lambda p: np.dot(p,np.argsort(p))/sum(p)+1
+        weighted = lambda p: np.dot(range(1,6), p)
         return [weighted(p) for p in categorical_predictions]
+    else:
+        raise NotImplementedError
