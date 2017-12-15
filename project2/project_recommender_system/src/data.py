@@ -1,3 +1,19 @@
+"""
+CS-433 : Machine Learning
+Project 2 -- Recommender Systems
+
+Team :
+* Dylan Bourgeois
+* Antoine Mougeot
+* Philippe Verbist
+
+---
+
+data.py : main interface for interacting with the dataset.
+
+Defines a set of helper functions to load and manipulate the data.
+"""
+
 from sklearn import model_selection
 import pandas as pd
 import numpy as np
