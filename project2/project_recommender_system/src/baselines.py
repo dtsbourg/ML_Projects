@@ -42,8 +42,7 @@ def dict_nbrating_movie(df):
 
 
 def baselines():
-    train, _, test, _ = data.load_data(categorical=False,
-                                                                            test_size=0.1, train_size=0.9)
+    train, _, test, _ = data.load_data(categorical=False, test_size=0.1, train_size=0.9)
     train["Rating"] = train.Prediction
     test["Rating"]  = test.Prediction
 
