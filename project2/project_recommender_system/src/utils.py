@@ -1,3 +1,20 @@
+"""
+CS-433 : Machine Learning
+Project 2 -- Recommender Systems
+
+Team :
+* Dylan Bourgeois
+* Antoine Mougeot
+* Philippe Verbist
+
+---
+
+utils.py : Defining several useful utilities.
+
+Includes functions to manipulate the model (loading and saving pre-trained models),
+plotting the model's performance, building embeddings.
+"""
+
 from keras.utils import plot_model
 from keras import models
 import numpy as np

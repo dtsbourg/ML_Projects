@@ -1,3 +1,22 @@
+"""
+CS-433 : Machine Learning
+Project 2 -- Recommender Systems
+
+Team :
+* Dylan Bourgeois
+* Antoine Mougeot
+* Philippe Verbist
+
+---
+
+models.py : main model definition module.
+
+Here are defined the main models that we use in this project. They are all
+subclassed off of `Network`, but other classes of models are welcome here too.
+They all return a compiled Keras model, and require a `model_func` which
+explicits their architecture.
+"""
+
 import keras
 from keras import layers
 from keras import models
@@ -32,7 +51,10 @@ class Network(object):
     def description_str(self, suffix="", uid=False):
         model_type = self.model_type + "_"
         model_size = str(self.n_train_samples) + "_train_" + str(self.n_test_samples) + "_test_" + str(self.k_features) + "_features_"
-        model_params = self.optimizer + "_" + self.loss + "_"
+        if isinstance(self.optimizer, str):
+            model_params = self.optimizer + "_" + self.loss + "_"
+        else:
+            model_params = "SGD" + "_" + self.loss + "_"
         model_categ = ""
         if self.n_classes > 1:
             model_categ = "categorical_"
@@ -71,6 +93,33 @@ class ShallowNetwork(Network):
         model = models.Model([input_i, input_u], output)
         model.compile(optimizer=self.optimizer, loss=self.loss)
         return model
+
+class ShallowNetwork2(Network):
+    """docstring for ShallowNetwork2."""
+    def __init__(self, *args, **kwargs):
+        super(ShallowNetwork, self).__init__(*args, **kwargs)
+        self.model_type = "Shallow2"
+
+    def model_func(self):
+        input_i = layers.Input(shape=[1])
+        i = layers.Embedding(self.n_items+1, self.k_features, embeddings_regularizer=l2(0.0001))(input_i)
+        input_u = layers.Input(shape=[1])
+        u = layers.Embedding(self.n_users+1, self.k_features, embeddings_regularizer=l2(0.0001))(input_u)
+
+        nn = layers.concatenate([i, u])
+
+        nn = Flatten()(nn)
+        nn = Dropout(0.25)(nn)
+        nn = Dense(64, activation='relu')(nn)
+        nn = Dropout(0.75)(nn)
+
+        output = Dense(1)(nn)
+
+        model = models.Model([input_i, input_u], output)
+        model.compile(Adam(0.001), loss='mse')
+
+        return model
+
 
 class DeepNetwork(Network):
     """docstring for DeepNetwork."""
@@ -128,12 +177,6 @@ class DeepNetworkFeat(Network):
         u = layers.Flatten()(u)
         u = layers.normalization.BatchNormalization()(u)
 
-        # TODO : Magic number
-        input_i_tsne = layers.Input(shape=[3])
-        im_tsne = layers.normalization.BatchNormalization()(input_i_tsne)
-        input_u_tsne = layers.Input(shape=[3])
-        um_tsne = layers.normalization.BatchNormalization()(input_u_tsne)
-
         input_i_spectral = layers.Input(shape=[128])
         im_spectral = layers.normalization.BatchNormalization()(input_i_spectral)
         input_u_spectral = layers.Input(shape=[128])
@@ -144,7 +187,7 @@ class DeepNetworkFeat(Network):
         input_u_lle = layers.Input(shape=[128])
         um_lle = layers.normalization.BatchNormalization()(input_u_lle)
 
-        nn = layers.concatenate([i, u, im_tsne, um_tsne, im_spectral, um_spectral, im_lle, um_lle])
+        nn = layers.concatenate([i, u, im_spectral, um_spectral, im_lle, um_lle])
 
         nn = layers.Dense(1024, activation='relu')(nn)
         nn = layers.Dropout(0.5)(nn)
@@ -159,7 +202,7 @@ class DeepNetworkFeat(Network):
 
         output = layers.Dense(5, activation='softmax')(nn)
 
-        model = models.Model([input_i, input_u, input_i_tsne, input_u_tsne, input_i_spectral, input_u_spectral, input_i_lle, input_u_lle], output)
+        model = models.Model([input_i, input_u, input_i_spectral, input_u_spectral, input_i_lle, input_u_lle], output)
         model.compile(optimizer=self.optimizer, loss=self.loss, metrics=['accuracy'])
         return model
 
@@ -222,26 +265,40 @@ class DeepNetworkFeatReg(Network):
 
     def model_func(self):
         input_i = layers.Input(shape=[1])
-        i = layers.Embedding(self.n_items + 1, self.k_features)(input_i)
+        i = layers.Embedding(self.n_items + 1, self.k_features, embeddings_regularizer=regularizers.l2(0.0001))(input_i)
         i = layers.Flatten()(i)
         i = layers.normalization.BatchNormalization()(i)
 
         input_u = layers.Input(shape=[1])
-        u = layers.Embedding(self.n_users + 1, self.k_features)(input_u)
+        u = layers.Embedding(self.n_users + 1, self.k_features, embeddings_regularizer=regularizers.l2(0.0001))(input_u)
         u = layers.Flatten()(u)
         u = layers.normalization.BatchNormalization()(u)
 
-        input_i_spectral = layers.Input(shape=[128])
+        input_i_spectral = layers.Input(shape=[64])
         im_spectral = layers.normalization.BatchNormalization()(input_i_spectral)
-        input_u_spectral = layers.Input(shape=[128])
+        input_u_spectral = layers.Input(shape=[64])
         um_spectral = layers.normalization.BatchNormalization()(input_u_spectral)
 
-        input_i_lle = layers.Input(shape=[128])
+        input_i_lle = layers.Input(shape=[64])
         im_lle = layers.normalization.BatchNormalization()(input_i_lle)
-        input_u_lle = layers.Input(shape=[128])
+        input_u_lle = layers.Input(shape=[64])
         um_lle = layers.normalization.BatchNormalization()(input_u_lle)
 
-        nn = layers.concatenate([i, u, im_spectral, um_spectral, im_lle, um_lle])
+        input_i_fa = layers.Input(shape=[64])
+        im_fa = layers.normalization.BatchNormalization()(input_i_fa)
+        input_u_fa = layers.Input(shape=[64])
+        um_fa = layers.normalization.BatchNormalization()(input_u_fa)
+
+        input_i_nmf = layers.Input(shape=[64])
+        im_nmf = layers.normalization.BatchNormalization()(input_i_nmf)
+        input_u_nmf = layers.Input(shape=[64])
+        um_nmf = layers.normalization.BatchNormalization()(input_u_nmf)
+
+        nn = layers.concatenate([i, u,
+                                 im_spectral, um_spectral,
+                                 im_lle, um_lle,
+                                 im_fa, um_fa,
+                                 im_nmf, um_nmf])
 
         nn = layers.Dense(1024, activation='relu')(nn)
         nn = layers.Dropout(0.5)(nn)
@@ -254,9 +311,14 @@ class DeepNetworkFeatReg(Network):
         nn = layers.normalization.BatchNormalization()(nn)
         nn = layers.Dense(128, activation='relu')(nn)
 
-        output = layers.Dense(5, activation='softmax', activity_regularizer=regularizers.l2(0.0001))(nn)
+        output = layers.Dense(5, activation='softmax')(nn)
 
-        model = models.Model([input_i, input_u, input_i_spectral, input_u_spectral, input_i_lle, input_u_lle], output)
+        model = models.Model([input_i, input_u,
+                              input_i_spectral, input_u_spectral,
+                              input_i_lle, input_u_lle,
+                              input_i_fa, input_u_fa,
+                              input_i_nmf, input_u_nmf], output)
+
         model.compile(optimizer=self.optimizer, loss=self.loss, metrics=['accuracy'])
         return model
 
@@ -265,34 +327,35 @@ class DenseNetwork(Network):
     def __init__(self, *args, **kwargs):
         super(DenseNetwork, self).__init__(*args, **kwargs)
         self.model_type = "Simple_Dense"
-        if self.n_classes > 1:
-            print("[ERROR] Dense Netorks don't expect categorical data.")
-            print("\t Please set categorical=false when creating the train/test split.")
-            raise Exception("Unexpected categorical data in Dense Network.")
 
     def model_func(self):
         input_i = layers.Input(shape=[1])
-        i = layers.Embedding(self.n_items + 1, self.k_features)(input_i)
+        i = layers.Embedding(self.n_items + 1, self.k_features, embeddings_regularizer=regularizers.l2(0.0001))(input_i)
         i = layers.Reshape((self.k_features,))(i)
-        i = layers.normalization.BatchNormalization()(i)
+        i = layers.Dropout(0.5)(i)
+        # i = layers.normalization.BatchNormalization()(i)
 
         input_u = layers.Input(shape=[1])
-        u = layers.Embedding(self.n_users + 1, self.k_features)(input_u)
-        u = layers.Flatten()(u)
+        u = layers.Embedding(self.n_users + 1, self.k_features, embeddings_regularizer=regularizers.l2(0.0001))(input_u)
         u = layers.Reshape((self.k_features,))(u)
-        u = layers.normalization.BatchNormalization()(u)
+        u = layers.Dropout(0.5)(u)
+        # u = layers.normalization.BatchNormalization()(u)
 
         nn = layers.concatenate([i, u])
-        nn = layers.Dropout(0.5)(nn)
-        nn = layers.Dense(self.k_features, activation='relu')(nn)
-        nn = layers.Dropout(0.5)(nn)
 
-        output =  layers.Dense(self.n_classes, activation='linear')(nn)
+        nn = layers.Dense(256, activation='relu')(nn)
+        nn = layers.Dropout(0.5)(nn)
+        nn = layers.normalization.BatchNormalization()(nn)
+
+        nn = layers.Dense(256, activation='relu')(nn)
+        nn = layers.Dropout(0.5)(nn)
+        nn = layers.normalization.BatchNormalization()(nn)
+
+        nn = layers.Dense(256, activation='relu')(nn)
+
+        output =  layers.Dense(self.n_classes, activation='softmax')(nn)
 
         model = models.Model([input_i, input_u], output)
-        if self.loss == 'categorical_crossentropy':
-            print("[WARNING] Categorical Cross Entropy does not make sense in this case.")
-            print("\t Changing to MSE")
-            self.loss='mean_squared_error'
+
         model.compile(optimizer=self.optimizer, loss=self.loss)
         return model
