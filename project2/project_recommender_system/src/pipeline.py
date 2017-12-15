@@ -23,11 +23,11 @@ Available pipelines :
 * embedding_pipeline
 """
 
+from keras   import optimizers
 from sklearn import model_selection
 import pandas as pd
-import numpy as np
+import numpy  as np
 import datetime
-from keras import optimizers
 
 import models
 import run
@@ -40,13 +40,11 @@ def dense_net_pipeline(train, predict, setup):
         n_users = train_x.User.max()
         n_items = train_x.Item.max()
 
-        sgd = optimizers.Adam(lr=0.005)
-
         s = models.DenseNetwork(n_items=n_items,
                                 n_users=n_users,
                                 n_train_samples=len(train_x),
                                 n_test_samples=len(test_x),
-                                optimizer=sgd,
+                                optimizer=optimizers.Adam(lr=0.005),
                                 k_features=64)
 
         history = run.fit(model=s,
@@ -55,7 +53,7 @@ def dense_net_pipeline(train, predict, setup):
                           test_x=test_x,
                           test_y=test_y,
                           epochs=100,
-                          batch_size=2**12)
+                          batch_size=2048)
 
         utils.plot(s.description_str(), history)
         utils.save_model(s)
@@ -67,7 +65,7 @@ def dense_net_pipeline(train, predict, setup):
 
         sub = data.load_submission()
 
-        pred = m.predict([sub.Item, sub.User], batch_size=2**12)
+        pred = m.predict([sub.Item, sub.User], batch_size=2048)
 
         sub['Prediction'] = run.predict(pred)
         model_uid = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S")
@@ -154,12 +152,12 @@ def deep_regularized_feat_net_pipeline(train, predict, setup):
 
         adam = optimizers.Adam(lr=0.001)
 
-        s = models.DeepNetworkFeatReg( n_items=n_items,
-                                       n_users=n_users,
-                                       n_train_samples=len(train_x),
-                                       n_test_samples=len(test_x),
-                                       optimizer=adam,
-                                       k_features=128)
+        s = models.DeepNetwork( n_items=n_items,
+                                n_users=n_users,
+                                n_train_samples=len(train_x),
+                                n_test_samples=len(test_x),
+                                optimizer=adam,
+                                k_features=128)
 
         history = run.fit(model=s,
                           train_x=train_x,
@@ -208,14 +206,6 @@ def deep_regularized_feat_net_pipeline(train, predict, setup):
         model_uid = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S")
         sub.to_csv('../res/pred/submission_test_weighted_deep_full_feat_full_reg_'+model_uid+'.csv', columns=['Id', 'Prediction'], index=False)
 
-    if setup is True:
-        train_x, train_y, test_x, test_y = data.load_full(categorical=False, test_split=0.0)
-        # # Training data embedding
-        # embedding_pipeline(train_x, train_y)
-        # # Test data embedding
-        # embedding_pipeline(test_x, test_y, suffix='_test')
-        full_x, full_y, _, _ = data.load_full(categorical=False, test_split=0.0)
-        embedding_pipeline(full_x, full_y, suffix='_full')
 
 def deep_feat_net_pipeline(train, predict, setup):
     if train is True:
@@ -264,16 +254,9 @@ def deep_feat_net_pipeline(train, predict, setup):
         model_uid = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S")
         sub.to_csv('../res/pred/submission_test_weighted_deep_full_feat_full_'+model_uid+'.csv', columns=['Id', 'Prediction'], index=False)
 
-    if setup is True:
-        train_x, train_y, test_x, test_y = data.load_full(categorical=False, test_split=0.0)
-        # # Training data embedding
-        # embedding_pipeline(train_x, train_y)
-        # # Test data embedding
-        # embedding_pipeline(test_x, test_y, suffix='_test')
-        full_x, full_y, _, _ = data.load_full(categorical=False, test_split=0.0)
-        embedding_pipeline(full_x, full_y, suffix='_full')
 
-def embedding_pipeline(x,y,suffix=''):
+def embedding_pipeline(suffix=''):
+    x, y, _, _ = data.load_full(categorical=False, test_split=0.0)
     ##################################
     # Interaction Matrix
     ##################################
