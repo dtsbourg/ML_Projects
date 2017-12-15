@@ -42,7 +42,7 @@ def runSVD():
 
     for index, row in test.iterrows():
         file_out.write("r{us}_c{mo},{res}\n".format(us=row['User'],mo= row['Item'],
-                    res=algo.estimate(row['User'], row['Item'])))
+                    res=algo.estimate(row['User']-1, row['Item']-1)))
     file_out.close()
 
 
@@ -62,7 +62,6 @@ def runSVDpp():
     random.seed(42)
     data.split(n_folds=2)  # data can now be used normally
 
-    # We'll use the famous SVD algorithm.
     algo = SVDpp()
 
     # Evaluate performances of our algorithm on the dataset.
@@ -92,9 +91,8 @@ def runNMF():
     # The columns must correspond to user id, item id and ratings (in that order).
     data = Dataset.load_from_df(df[['User', 'Item', 'Rating']], reader)
     random.seed(42)
-    data.split(n_folds=2)  # data can now be used normally
+    data.split(n_folds=2)
 
-    # We'll use the famous SVD algorithm.
     algo = NMF()
 
     # Evaluate performances of our algorithm on the dataset.
@@ -104,10 +102,10 @@ def runNMF():
     file_out = open('resultNMF.csv', 'w')
     file_out.truncate()
     file_out.write('Id,Prediction\n')
-
+    
     for index, row in sub.iterrows():
         file_out.write("r{us}_c{mo},{res}\n".format(us=row['User'],mo= row['Item'],
-                    res=algo.estimate(row['User'], row['Item'])))
+                    res=algo.estimate(row['User']-1, row['Item']-1)))
     file_out.close()
 
 
