@@ -46,7 +46,6 @@ class Network(object):
         self.model_type = "Basic"
         self.descr = self.description_str()
 
-
     def model_func(self):
         raise NotImplementedError()
 

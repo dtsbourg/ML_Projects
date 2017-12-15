@@ -141,8 +141,7 @@ def deep_net_pipeline(train, predict):
         m = utils.load_model(path)
 
         sub = data.load_submission()
-        sub = [sub.Item, sub.User]
-        sub_data = utils.load_full_embedding(sub)
+        sub_data = utils.load_full_embedding([sub.Item, sub.User])
 
         pred = m.predict(sub_data, batch_size=batch_size)
 
