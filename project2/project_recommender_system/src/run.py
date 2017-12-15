@@ -1,3 +1,19 @@
+"""
+CS-433 : Machine Learning
+Project 2 -- Recommender Systems
+
+Team :
+* Dylan Bourgeois
+* Antoine Mougeot
+* Philippe Verbist
+
+---
+
+run.py : interface for heavy lifting.
+
+Defines the main computational operations : fitting the model and using it to predict.
+"""
+
 import keras
 from keras import layers
 from keras import models
@@ -5,9 +21,6 @@ from keras import optimizers
 from keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
 
 from models import DeepNetworkFeatReg, DenseNetwork
-
-import matplotlib.pyplot as plt
-plt.style.use('ggplot')
 
 import numpy as np
 
@@ -86,15 +99,6 @@ def fit(model, train_x, train_y, test_x, test_y, embedding=False, epochs=10, bat
     model.descr = model.description_str(suffix= str(max(history.epoch)+1) + "_epochs_", uid=True)
 
     return history
-
-def plot(description, history, show=False):
-    plt.plot(history.history['loss'], label='loss')
-    plt.plot(history.history['val_loss'], label='val_loss')
-    plt.xlabel('epochs')
-    plt.ylabel('loss')
-    plt.legend()
-    if show is False:
-        plt.savefig('../res/img/' + description + '.png')
 
 def predict(categorical_predictions, voting='weighted'):
     if voting=='absolute':

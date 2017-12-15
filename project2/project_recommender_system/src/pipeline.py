@@ -57,7 +57,7 @@ def dense_net_pipeline(train, predict, setup):
                           epochs=100,
                           batch_size=2**12)
 
-        run.plot(s.description_str(), history)
+        utils.plot(s.description_str(), history)
         utils.save_model(s)
 
     if predict is True:
@@ -94,7 +94,7 @@ def shallow_net_pipeline(train, predict, setup):
                           epochs=20,
                           batch_size=2**11)
 
-        run.plot(s.description_str(), history)
+        utils.plot(s.description_str(), history)
         utils.save_model(s)
 
     if predict is True:
@@ -128,7 +128,7 @@ def deep_net_pipeline(train, predict, setup):
                           test_y=test_y,
                           epochs=20,
                           batch_size=256)
-        run.plot(s.description_str(), history)
+        utils.plot(s.description_str(), history)
         utils.save_model(s)
 
     if predict is True:
@@ -170,7 +170,7 @@ def deep_regularized_feat_net_pipeline(train, predict, setup):
                           epochs=100,
                           batch_size=batch_size)
 
-        run.plot(s.description_str(), history)
+        utils.plot(s.description_str(), history)
         utils.save_model(s)
 
     if predict is True:
@@ -240,7 +240,7 @@ def deep_feat_net_pipeline(train, predict, setup):
                           epochs=20,
                           batch_size=256)
 
-        run.plot(s.description_str(), history)
+        utils.plot(s.description_str(), history)
         utils.save_model(s)
 
     if predict is True:
@@ -249,20 +249,16 @@ def deep_feat_net_pipeline(train, predict, setup):
         m = utils.load_model(path)
 
         sub = data.load_submission()
-        u_tsne_sub = np.load('../data/embeddings/users_t_sne_full.npy')
-        sub_tsne_u = u_tsne_sub[sub.User - 1]
         u_spectral_sub = np.load('../data/embeddings/users_spectral_full.npy')
         sub_spectral_u = u_spectral_sub[sub.User - 1]
         u_lle_sub = np.load('../data/embeddings/users_lle_full.npy')
         sub_lle_u = u_lle_sub[sub.User - 1]
 
-        i_tsne_sub = np.load('../data/embeddings/items_t_sne_full.npy')
-        sub_tsne_i = i_tsne_sub[sub.Item - 1]
         i_spectral_sub = np.load('../data/embeddings/items_spectral_full.npy')
         sub_spectral_i = i_spectral_sub[sub.Item - 1]
         i_lle_sub = np.load('../data/embeddings/items_lle_full.npy')
         sub_lle_i = i_lle_sub[sub.Item - 1]
-        pred = m.predict([sub.Item, sub.User, sub_tsne_i, sub_tsne_u, sub_spectral_i, sub_spectral_u, sub_lle_i, sub_lle_u], batch_size=256)
+        pred = m.predict([sub.Item, sub.User, sub_spectral_i, sub_spectral_u, sub_lle_i, sub_lle_u], batch_size=256)
 
         sub['Prediction'] = run.predict(pred)
         model_uid = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S")
@@ -287,7 +283,7 @@ def embedding_pipeline(x,y,suffix=''):
     #                                       suffix=suffix)
     path = '../data/embeddings/interaction_matrix_full'
     ##################################
-    # t-SNE Embedding
+    # t-SNE Embedding (deprecated)
     ##################################
     # utils.build_tSNE_embedding(path+'.npy', suffix=suffix)
 

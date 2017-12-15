@@ -4,6 +4,9 @@ import numpy as np
 from sklearn import manifold
 from sklearn import decomposition
 
+import matplotlib.pyplot as plt
+plt.style.use('ggplot')
+
 def save_model_graph(model):
     plot_model(model, to_file='../res/model/' + model.descr + '.png')
 
@@ -15,6 +18,15 @@ def save_model(cm):
 
 def load_model(path):
     return models.load_model(path)
+
+def plot(description, history, show=False):
+    plt.plot(history.history['loss'], label='loss')
+    plt.plot(history.history['val_loss'], label='val_loss')
+    plt.xlabel('epochs')
+    plt.ylabel('loss')
+    plt.legend()
+    if show is False:
+        plt.savefig('../res/img/' + description + '.png')
 
 def build_interaction_matrix(users, items, ratings, suffix=''):
     matrix = np.zeros((max(users), max(items)), dtype=np.int)
