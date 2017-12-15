@@ -26,12 +26,7 @@ def build_interaction_matrix(users, items, ratings, suffix=''):
     return path_str
 
 def build_embedding(path, embedding=None):
-    if embedding == 't-SNE':
-        mat = np.load(path)
-        u_tsne = manifold.TSNE(n_components=3, random_state=0).fit_transform(mat)
-        i_tsne = manifold.TSNE(n_components=3, random_state=0).fit_transform(mat.T)
-        return u_tsne, i_tsne
-    elif embedding == 'spectral':
+    if embedding == 'spectral':
         mat = np.load(path)
         u_spectral = manifold.SpectralEmbedding(n_components=64, random_state=0, n_jobs=8).fit_transform(mat)
         i_spectral = manifold.SpectralEmbedding(n_components=64, random_state=0, n_jobs=8).fit_transform(mat.T)
@@ -53,6 +48,8 @@ def build_embedding(path, embedding=None):
         return u_nmf, i_nmf
 
 def build_tSNE_embedding(path, suffix="", save=True):
+    raise DeprecationWarning
+    print("t-SNE is not used in our models anymore. Make you are calling this method purposefully.")
     u_e, i_e = build_embedding(path=path, embedding='t-SNE')
     if save is True:
         np.save('../data/embeddings/users_t_sne'+suffix, u_e)
