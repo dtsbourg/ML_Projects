@@ -29,4 +29,4 @@ def get_mode(args):
 if __name__ == '__main__':
     args = vars(parser.parse_args())
     train, predict = get_mode(args)
-    pipeline.deep_regularized_feat_net_pipeline(train=train, predict=predict)
+    pipeline.deep_net_pipeline(train=train, predict=predict)

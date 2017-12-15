@@ -19,33 +19,17 @@ from keras import layers
 from keras import models
 from keras import optimizers
 from keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
-
-from utils import load_embedding
-
 import numpy as np
+
+from utils import load_embedding, load_full_embedding
 
 def fit(model, train_x, train_y, test_x, test_y, embedding=False, epochs=10, batch_size=512):
     training_data = [train_x.Item, train_x.User]
     test_data = [test_x.Item, test_x.User]
 
     if embedding is True:
-        train_data += load_embedding(path='../data/embeddings/items_spectral_64.npy', idx=train_x.Item)
-        train_data += load_embedding(path='../data/embeddings/users_spectral_64.npy', idx=train_x.User)
-        train_data += load_embedding(path='../data/embeddings/items_lle_64.npy',      idx=train_x.Item)
-        train_data += load_embedding(path='../data/embeddings/users_lle_64.npy',      idx=train_x.User)
-        train_data += load_embedding(path='../data/embeddings/items_fa_64.npy',       idx=train_x.Item)
-        train_data += load_embedding(path='../data/embeddings/users_fa_64.npy',       idx=train_x.User)
-        train_data += load_embedding(path='../data/embeddings/items_nmf_64.npy',      idx=train_x.Item)
-        train_data += load_embedding(path='../data/embeddings/users_nmf_64.npy',      idx=train_x.User)
-
-        test_data += load_embedding(path='../data/embeddings/items_spectral_64.npy', idx=test_x.Item)
-        test_data += load_embedding(path='../data/embeddings/users_spectral_64.npy', idx=test_x.User)
-        test_data += load_embedding(path='../data/embeddings/items_lle_64.npy',      idx=test_x.Item)
-        test_data += load_embedding(path='../data/embeddings/users_lle_64.npy',      idx=test_x.User)
-        test_data += load_embedding(path='../data/embeddings/items_fa_64.npy',       idx=test_x.Item)
-        test_data += load_embedding(path='../data/embeddings/users_fa_64.npy',       idx=test_x.User)
-        test_data += load_embedding(path='../data/embeddings/items_nmf_64.npy',      idx=test_x.Item)
-        test_data += load_embedding(path='../data/embeddings/users_nmf_64.npy',      idx=test_x.User)
+        training_data = load_full_embedding(training_data)
+        test_data     = load_full_embedding(test_data)
 
     callbacks = [EarlyStopping('val_loss', patience=5),
                  ModelCheckpoint('../res/model/'+model.description_str(), save_best_only=True)]

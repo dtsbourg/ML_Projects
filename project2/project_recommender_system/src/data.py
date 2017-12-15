@@ -16,11 +16,12 @@ Defines a set of helper functions to load and manipulate the data.
 
 from sklearn import model_selection
 import pandas as pd
-import numpy as np
+import numpy  as np
 
 def load_data(path='../data/data_train.csv', categorical=True, test_size=0.05, train_size=0.1):
     ratings = pd.read_csv(path, dtype={'Prediction': np.int})
     pos = ratings.Id.str.extract('r([0-9]+)_c([0-9]+)', expand=True)
+
     ratings['User'] = pos[0].astype(np.int)
     ratings['Item'] = pos[1].astype(np.int)
 

@@ -34,7 +34,7 @@ import run
 import data
 import utils
 
-def dense_net_pipeline(train, predict, setup):
+def dense_net_pipeline(train, predict):
     if train is True:
         train_x, train_y, test_x, test_y = data.load_full()
         n_users = train_x.User.max()
@@ -71,7 +71,7 @@ def dense_net_pipeline(train, predict, setup):
         model_uid = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S")
         sub.to_csv('../res/pred/submission_test_weighted_dense_full'+model_uid+'.csv', columns=['Id', 'Prediction'], index=False)
 
-def shallow_net_pipeline(train, predict, setup):
+def shallow_net_pipeline(train, predict):
     if train is True:
         train_x, train_y, test_x, test_y = data.load_full()
         n_users = train_x.User.max()
@@ -108,55 +108,19 @@ def shallow_net_pipeline(train, predict, setup):
         model_uid = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S")
         sub.to_csv('../res/pred/submission_test_weighted_shallow'+model_uid+'.csv', columns=['Id', 'Prediction'], index=False)
 
-def deep_net_pipeline(train, predict, setup):
-    if train is True:
-        train_x, train_y, test_x, test_y = data.load_subset()
-        n_users = train_x.User.max()
-        n_items = train_x.Item.max()
 
-        s = models.DeepNetwork(n_items=n_items,
-                               n_users=n_users,
-                               n_train_samples=len(train_x),
-                               n_test_samples=len(test_x),
-                               optimizer='adam')
-        history = run.fit(model=s,
-                          train_x=train_x,
-                          train_y=train_y,
-                          test_x=test_x,
-                          test_y=test_y,
-                          epochs=20,
-                          batch_size=256)
-        utils.plot(s.description_str(), history)
-        utils.save_model(s)
-
-    if predict is True:
-        model_str = 'Simple_Deep_117695_train_58848_test_64_features_adam_categorical_crossentropy_categorical_11_epochs_.h5'
-        path = '../res/model/'+model_str
-        m = utils.load_model(path)
-
-        sub = data.load_submission()
-
-        pred = m.predict([sub.Item, sub.User], batch_size=256)
-
-        sub['Prediction'] = run.predict(pred)
-        model_uid = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S")
-        sub.to_csv('../res/pred/submission_test_weighted_deep_full'+model_uid+'.csv', columns=['Id', 'Prediction'], index=False)
-
-def deep_regularized_feat_net_pipeline(train, predict, setup):
+def deep_net_pipeline(train, predict):
     batch_size = 2048
     if train is True:
-        #train_x, train_y, test_x, test_y = data.load_subset()
-        train_x, train_y, test_x, test_y = data.load_full(test_split=0.5)
+        train_x, train_y, test_x, test_y = data.load_full()
         n_users = train_x.User.max()
         n_items = train_x.Item.max()
-
-        adam = optimizers.Adam(lr=0.001)
 
         s = models.DeepNetwork( n_items=n_items,
                                 n_users=n_users,
                                 n_train_samples=len(train_x),
                                 n_test_samples=len(test_x),
-                                optimizer=adam,
+                                optimizer=optimizers.Adam(lr=0.001),
                                 k_features=128)
 
         history = run.fit(model=s,
@@ -177,82 +141,14 @@ def deep_regularized_feat_net_pipeline(train, predict, setup):
         m = utils.load_model(path)
 
         sub = data.load_submission()
-        u_spectral_sub = np.load('../data/embeddings/users_spectral_64.npy')
-        sub_spectral_u = u_spectral_sub[sub.User - 1]
-        u_lle_sub      = np.load('../data/embeddings/users_lle_64.npy')
-        sub_lle_u      = u_lle_sub[sub.User - 1]
-        u_fa_sub       = np.load('../data/embeddings/users_fa_64.npy')
-        sub_fa_u       = u_fa_sub[sub.User - 1]
-        u_nmf_sub      = np.load('../data/embeddings/users_nmf_64.npy')
-        sub_nmf_u      = u_nmf_sub[sub.User - 1]
+        sub = [sub.Item, sub.User]
+        sub_data = utils.load_full_embedding(sub)
 
-        i_spectral_sub = np.load('../data/embeddings/items_spectral_64.npy')
-        sub_spectral_i = i_spectral_sub[sub.Item - 1]
-        i_lle_sub      = np.load('../data/embeddings/items_lle_64.npy')
-        sub_lle_i      = i_lle_sub[sub.Item - 1]
-        i_fa_sub       = np.load('../data/embeddings/items_fa_64.npy')
-        sub_fa_i       = i_fa_sub[sub.Item - 1]
-        i_nmf_sub      = np.load('../data/embeddings/items_nmf_64.npy')
-        sub_nmf_i      = i_nmf_sub[sub.Item - 1]
-
-        pred = m.predict([sub.Item, sub.User, \
-                          sub_spectral_i, sub_spectral_u, \
-                          sub_lle_i, sub_lle_u, \
-                          sub_fa_i, sub_fa_u, \
-                          sub_nmf_i, sub_nmf_u],
-                          batch_size=batch_size)
+        pred = m.predict(sub_data, batch_size=batch_size)
 
         sub['Prediction'] = run.predict(pred)
         model_uid = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S")
         sub.to_csv('../res/pred/submission_test_weighted_deep_full_feat_full_reg_'+model_uid+'.csv', columns=['Id', 'Prediction'], index=False)
-
-
-def deep_feat_net_pipeline(train, predict, setup):
-    if train is True:
-        # train_x, train_y, test_x, test_y = data.load_subset()
-        train_x, train_y, test_x, test_y = data.load_full(test_split=0.4)
-        n_users = train_x.User.max()
-        n_items = train_x.Item.max()
-
-        s = models.DeepNetworkFeat(n_items=n_items,
-                                   n_users=n_users,
-                                   n_train_samples=len(train_x),
-                                   n_test_samples=len(test_x),
-                                   optimizer='adam',
-                                   k_features=128)
-
-        history = run.fit(model=s,
-                          train_x=train_x,
-                          train_y=train_y,
-                          test_x=test_x,
-                          test_y=test_y,
-                          embedding=True,
-                          epochs=20,
-                          batch_size=256)
-
-        utils.plot(s.description_str(), history)
-        utils.save_model(s)
-
-    if predict is True:
-        model_str = 'Deep_Full_Feat_588476_train_588476_test_128_features_adam_categorical_crossentropy_categorical_'
-        path = '../res/model/'+model_str
-        m = utils.load_model(path)
-
-        sub = data.load_submission()
-        u_spectral_sub = np.load('../data/embeddings/users_spectral_full.npy')
-        sub_spectral_u = u_spectral_sub[sub.User - 1]
-        u_lle_sub = np.load('../data/embeddings/users_lle_full.npy')
-        sub_lle_u = u_lle_sub[sub.User - 1]
-
-        i_spectral_sub = np.load('../data/embeddings/items_spectral_full.npy')
-        sub_spectral_i = i_spectral_sub[sub.Item - 1]
-        i_lle_sub = np.load('../data/embeddings/items_lle_full.npy')
-        sub_lle_i = i_lle_sub[sub.Item - 1]
-        pred = m.predict([sub.Item, sub.User, sub_spectral_i, sub_spectral_u, sub_lle_i, sub_lle_u], batch_size=256)
-
-        sub['Prediction'] = run.predict(pred)
-        model_uid = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S")
-        sub.to_csv('../res/pred/submission_test_weighted_deep_full_feat_full_'+model_uid+'.csv', columns=['Id', 'Prediction'], index=False)
 
 
 def embedding_pipeline(suffix=''):

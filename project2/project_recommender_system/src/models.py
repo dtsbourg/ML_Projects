@@ -39,12 +39,13 @@ class Network(object):
         self.n_test_samples  = n_test_samples
         self.optimizer = optimizer
         self.loss = loss
-        self.model = self.model_func()
-        self.model_type = "Basic"
-        self.descr = self.description_str()
         self.EMBED_FEAT = 64
         self.DROPOUT    = 0.5
         self.EMBED_REG  = 1e-4
+        self.model = self.model_func()
+        self.model_type = "Basic"
+        self.descr = self.description_str()
+
 
     def model_func(self):
         raise NotImplementedError()

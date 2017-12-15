@@ -112,6 +112,18 @@ def build_nmf_embedding(path, suffix="", save=True):
         np.save('../data/embeddings/items_nmf'+suffix, i_e)
     return u_e, i_e
 
+def load_full_embedding(data):
+    item_idx = data[0]; user_idx = data[1]
+    data += load_embedding(path='../data/embeddings/items_spectral_64.npy', idx=item_idx)
+    data += load_embedding(path='../data/embeddings/users_spectral_64.npy', idx=user_idx)
+    data += load_embedding(path='../data/embeddings/items_lle_64.npy',      idx=item_idx)
+    data += load_embedding(path='../data/embeddings/users_lle_64.npy',      idx=user_idx)
+    data += load_embedding(path='../data/embeddings/items_fa_64.npy',       idx=item_idx)
+    data += load_embedding(path='../data/embeddings/users_fa_64.npy',       idx=user_idx)
+    data += load_embedding(path='../data/embeddings/items_nmf_64.npy',      idx=item_idx)
+    data += load_embedding(path='../data/embeddings/users_nmf_64.npy',      idx=user_idx)
+    return data
+
 def load_embedding(path, idx):
     emb = np.load(path)
     t_emb = emb[idx - 1]
