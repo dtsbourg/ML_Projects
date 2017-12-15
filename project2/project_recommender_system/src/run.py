@@ -20,7 +20,7 @@ from keras import models
 from keras import optimizers
 from keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
 
-from models import DeepNetworkFeatReg, DenseNetwork
+from utils import load_embedding
 
 import numpy as np
 
@@ -29,61 +29,23 @@ def fit(model, train_x, train_y, test_x, test_y, embedding=False, epochs=10, bat
     test_data = [test_x.Item, test_x.User]
 
     if embedding is True:
-        ## Spectral embeddings
-        i_emb = np.load('../data/embeddings/items_spectral_64.npy')
-        train_emb_i = i_emb[train_x.Item - 1]
-        training_data += [train_emb_i]
-        test_emb_i = i_emb[test_x.Item - 1]
-        test_data += [test_emb_i]
+        train_data += load_embedding(path='../data/embeddings/items_spectral_64.npy', idx=train_x.Item)
+        train_data += load_embedding(path='../data/embeddings/users_spectral_64.npy', idx=train_x.User)
+        train_data += load_embedding(path='../data/embeddings/items_lle_64.npy',      idx=train_x.Item)
+        train_data += load_embedding(path='../data/embeddings/users_lle_64.npy',      idx=train_x.User)
+        train_data += load_embedding(path='../data/embeddings/items_fa_64.npy',       idx=train_x.Item)
+        train_data += load_embedding(path='../data/embeddings/users_fa_64.npy',       idx=train_x.User)
+        train_data += load_embedding(path='../data/embeddings/items_nmf_64.npy',      idx=train_x.Item)
+        train_data += load_embedding(path='../data/embeddings/users_nmf_64.npy',      idx=train_x.User)
 
-        ## Spectral embeddings
-        u_emb = np.load('../data/embeddings/users_spectral_64.npy')
-        train_emb_u = u_emb[train_x.User - 1]
-        training_data += [train_emb_u]
-        test_emb_u = u_emb[test_x.User - 1]
-        test_data += [test_emb_u]
-
-        ## LLE embeddings
-        i_emb = np.load('../data/embeddings/items_lle_64.npy')
-        train_emb_i = i_emb[train_x.Item - 1]
-        training_data += [train_emb_i]
-        test_emb_i = i_emb[test_x.Item - 1]
-        test_data += [test_emb_i]
-
-        ## LLE embeddings
-        u_emb = np.load('../data/embeddings/users_lle_64.npy')
-        train_emb_u = u_emb[train_x.User - 1]
-        training_data += [train_emb_u]
-        test_emb_u = u_emb[test_x.User - 1]
-        test_data += [test_emb_u]
-
-        ## FA embeddings
-        i_emb = np.load('../data/embeddings/items_fa_64.npy')
-        train_emb_i = i_emb[train_x.Item - 1]
-        training_data += [train_emb_i]
-        test_emb_i = i_emb[test_x.Item - 1]
-        test_data += [test_emb_i]
-
-        ## FA embeddings
-        u_emb = np.load('../data/embeddings/users_fa_64.npy')
-        train_emb_u = u_emb[train_x.User - 1]
-        training_data += [train_emb_u]
-        test_emb_u = u_emb[test_x.User - 1]
-        test_data += [test_emb_u]
-
-        ## NMF embeddings
-        i_emb = np.load('../data/embeddings/items_nmf_64.npy')
-        train_emb_i = i_emb[train_x.Item - 1]
-        training_data += [train_emb_i]
-        test_emb_i = i_emb[test_x.Item - 1]
-        test_data += [test_emb_i]
-
-        ## NMF embeddings
-        u_emb = np.load('../data/embeddings/users_nmf_64.npy')
-        train_emb_u = u_emb[train_x.User - 1]
-        training_data += [train_emb_u]
-        test_emb_u = u_emb[test_x.User - 1]
-        test_data += [test_emb_u]
+        test_data += load_embedding(path='../data/embeddings/items_spectral_64.npy', idx=test_x.Item)
+        test_data += load_embedding(path='../data/embeddings/users_spectral_64.npy', idx=test_x.User)
+        test_data += load_embedding(path='../data/embeddings/items_lle_64.npy',      idx=test_x.Item)
+        test_data += load_embedding(path='../data/embeddings/users_lle_64.npy',      idx=test_x.User)
+        test_data += load_embedding(path='../data/embeddings/items_fa_64.npy',       idx=test_x.Item)
+        test_data += load_embedding(path='../data/embeddings/users_fa_64.npy',       idx=test_x.User)
+        test_data += load_embedding(path='../data/embeddings/items_nmf_64.npy',      idx=test_x.Item)
+        test_data += load_embedding(path='../data/embeddings/users_nmf_64.npy',      idx=test_x.User)
 
     callbacks = [EarlyStopping('val_loss', patience=5),
                  ModelCheckpoint('../res/model/'+model.description_str(), save_best_only=True)]
@@ -93,8 +55,7 @@ def fit(model, train_x, train_y, test_x, test_y, embedding=False, epochs=10, bat
         validation_data=(test_data, test_y),
         batch_size=batch_size,
         epochs=epochs,
-        callbacks=callbacks
-    )
+        callbacks=callbacks)
 
     model.descr = model.description_str(suffix= str(max(history.epoch)+1) + "_epochs_", uid=True)
 
