@@ -16,11 +16,10 @@ plotting the model's performance, building embeddings.
 """
 
 from keras.utils import plot_model
-from keras import models
-import numpy as np
+from keras   import models
 from sklearn import manifold
 from sklearn import decomposition
-
+import numpy as np
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
@@ -112,3 +111,8 @@ def build_nmf_embedding(path, suffix="", save=True):
         np.save('../data/embeddings/users_nmf'+suffix, u_e)
         np.save('../data/embeddings/items_nmf'+suffix, i_e)
     return u_e, i_e
+
+def load_embedding(path, idx):
+    emb = np.load(path)
+    t_emb = emb[idx - 1]
+    return [t_emb]
