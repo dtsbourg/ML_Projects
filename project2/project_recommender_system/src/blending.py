@@ -26,7 +26,7 @@ def blending_fun(x):
 
     res += x[7] * test_sl_svd["Result"]
     res += x[8] * test_sl_svdpp["Result"]
-    res += x[9] * test_sl_svdnmf["Result"]
+    res += x[9] * test_sl_nmf["Result"]
 
     rmse = math.sqrt(mean_squared_error(res, test_baseline['Rating']))
     return rmse
@@ -43,8 +43,8 @@ def blending():
 baselines.run()
 sl.runAll()
 test_baseline  = pd.read_pickle('svg/baseline_test.p')
-test_sl_svd    = pd.read_pickle('svg/suprise_SVD_test.p')
-test_sl_svdpp  = pd.read_pickle('svg/suprise_SVDpp_test.p')
-test_sl_nmf    = pd.read_pickle('svg/suprise_NMF_test.p')
+test_sl_svd    = pd.read_pickle('svg/surprise_SVD_test.p')
+test_sl_svdpp  = pd.read_pickle('svg/surprise_SVDpp_test.p')
+test_sl_nmf    = pd.read_pickle('svg/surprise_NMF_test.p')
 
 blending()
