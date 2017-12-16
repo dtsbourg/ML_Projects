@@ -56,7 +56,7 @@ def runAll():
 
     if not os.path.isfile('svg/surprise_SVDpp_test.p'):
         train, _, test, _ = datahelper.load_data(test_size=0.1, train_size=0.2)
-        train["Rating"] = train_big.Prediction
+        train["Rating"] = train.Prediction
         test["Rating"] = test.Prediction
 
         runSurprise(SVDpp(), train, test, "SVDpp")

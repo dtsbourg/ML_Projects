@@ -23,12 +23,12 @@ def explore(quick_load = False):
 
     matrix = np.zeros((max(user_idx), max(film_idx)), dtype=np.int)
 
-    if os.path.isfile("svg/matrix.p"):
-        matrix = pickle.load(open( 'svg/matrix.p', 'rb' ))
+    if os.path.isfile("svg/explo_matrix.p"):
+        matrix = pickle.load(open( 'svg/explo_matrix.p', 'rb' ))
     else:
         for i in range(len(user_idx)): # takes time!
             matrix[user_idx[i]-1, film_idx[i]-1] = ratings.Prediction[i]
-        pickle.dump(matrix, open( 'svg/matrix.p', 'wb' ))
+        pickle.dump(matrix, open( 'svg/explo_matrix.p', 'wb' ))
 
     print("There are {} users and {} movies".format(matrix.shape[0], matrix.shape[1]))
     
@@ -60,9 +60,9 @@ def explore(quick_load = False):
     train_matrix = matrix_subset.copy()
     test_matrix = np.zeros(matrix_subset.shape)
 
-    if os.path.isfile("svg/train_matrix.p") and os.path.isfile("svg/test_matrix.p"):
-        train_matrix = pickle.load(open( 'svg/train_matrix.p', 'rb' ))
-        test_matrix = pickle.load(open( 'svg/test_matrix.p', 'rb' ))
+    if os.path.isfile("svg/explo_train_matrix.p") and os.path.isfile("svg/explo_test_matrix.p"):
+        train_matrix = pickle.load(open( 'svg/explo_train_matrix.p', 'rb' ))
+        test_matrix = pickle.load(open( 'svg/explo_test_matrix.p', 'rb' ))
     else:
         np.random.seed(42)
         for i in range(1,len(matrix_subset[0])):
@@ -71,8 +71,8 @@ def explore(quick_load = False):
                 size=3)
             train_matrix[i, rating_idx] = 0.0
             test_matrix[i, rating_idx] = matrix_subset[i, rating_idx]
-        pickle.dump(train_matrix, open( 'svg/train_matrix.p', 'wb' ))
-        pickle.dump(test_matrix, open( 'svg/test_matrix.p', 'wb' ))
+        pickle.dump(train_matrix, open( 'svg/explo_train_matrix.p', 'wb' ))
+        pickle.dump(test_matrix, open( 'svg/explo_test_matrix.p', 'wb' ))
     
     plt.subplot(132)
     plt.imshow(test_matrix[:150, :200], aspect='auto', interpolation='nearest')
@@ -95,12 +95,12 @@ def explore(quick_load = False):
     film_idx = submission_idx[1].astype(int)
     sub_matrix = np.zeros((max(user_idx), max(film_idx)), dtype=np.int)
 
-    if os.path.isfile("svg/sub_matrix.p"):
-        sub_matrix = pickle.load(open( 'svg/sub_matrix.p', 'rb' ))
+    if os.path.isfile("svg/explo_sub_matrix.p"):
+        sub_matrix = pickle.load(open( 'svg/explo_sub_matrix.p', 'rb' ))
     else:
         for i in range(len(user_idx)): # takes time!
             sub_matrix[user_idx[i]-1, film_idx[i]-1] = submission_ratings.Prediction[i]
-        pickle.dump(sub_matrix, open( 'svg/sub_matrix.p', 'wb' ))
+        pickle.dump(sub_matrix, open( 'svg/explo_sub_matrix.p', 'wb' ))
         
     plt.figure(figsize = (5,5))
     plt.imshow(sub_matrix[:150, :200], aspect='auto', interpolation='nearest')
