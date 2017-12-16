@@ -4,12 +4,10 @@ from surprise import evaluate, print_perf
 import pandas as pd
 import random
 import data as datahelper
+import os
 
-def runSurprise(algo, n_folds=5, train_size=1.0, write=False, file_name="result.csv"):
-    train, _, _, _ = datahelper.load_data(path='../data/data_train.csv', test_size=0.0, train_size=train_size)
-    train["Rating"] = train.Prediction
-
-    if write:
+def runSurprise(algo, train, test, algo_string, n_folds=5, writeCSV=False, file_name="result.csv"):
+    if writeCSV:
         sub = datahelper.load_submission()
 
     df = pd.DataFrame(train)
@@ -25,7 +23,10 @@ def runSurprise(algo, n_folds=5, train_size=1.0, write=False, file_name="result.
     perf = evaluate(algo, data, measures=['RMSE'])
     print_perf(perf)
 
-    if write:
+    for index, row in test.iterrows():
+        test.at[index, "Result"] = algo.estimate(row['User']-1, row['Item']-1)
+
+    if writeCSV:
         file_out = open(file_name, 'w')
         file_out.truncate()
         file_out.write('Id,Prediction\n')
@@ -35,6 +36,33 @@ def runSurprise(algo, n_folds=5, train_size=1.0, write=False, file_name="result.
                         res=algo.estimate(row['User']-1, row['Item']-1)))
         file_out.close()
 
-runSurprise(algo=SVD(n_epochs=30, lr_all=0.001, reg_all=0.001))
-runSurprise(algo=SVDpp(), train_size=0.1)
-runSurprise(algo=NMF())
+
+def runAll():
+    if not os.path.isfile('svg/surprise_SVD_test.p'):
+        train, _, test, _ = datahelper.load_data(test_size=0.1, train_size=0.9)
+        train["Rating"] = train.Prediction
+        test["Rating"] = test.Prediction
+
+        runSurprise(SVD(n_epochs=30, lr_all=0.001, reg_all=0.001), train, test, "SVD")
+        test.to_pickle('svg/surprise_SVD_test.p')
+
+    if not os.path.isfile('svg/surprise_NMF_test.p'):
+        train, _, test, _ = datahelper.load_data(test_size=0.1, train_size=0.9)
+        train["Rating"] = train.Prediction
+        test["Rating"] = test.Prediction
+
+        runSurprise(NMF(), train, test, "NMF")
+        test.to_pickle('svg/surprise_NMF_test.p')
+
+    if not os.path.isfile('svg/surprise_SVDpp_test.p'):
+        train, _, test, _ = datahelper.load_data(test_size=0.1, train_size=0.2)
+        train["Rating"] = train_big.Prediction
+        test["Rating"] = test.Prediction
+
+        runSurprise(SVDpp(), train, test, "SVDpp")
+        test.to_pickle('svg/surprise_SVDpp_test.p')
+
+
+        
+
+    

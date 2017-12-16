@@ -176,9 +176,9 @@ def blending():
     res = sc.optimize.minimize(blending_fun, x0, method='SLSQP', options={'disp': True})
     print(res)
 
-
-baselines()
-train = pd.read_pickle('svg/baseline_train.p')
-test  = pd.read_pickle('svg/baseline_test.p')
-
-blending()
+def run():
+    baselines()
+    ##train = pd.read_pickle('svg/baseline_train.p')
+    ##test  = pd.read_pickle('svg/baseline_test.p')
+    ##
+    ##blending()
