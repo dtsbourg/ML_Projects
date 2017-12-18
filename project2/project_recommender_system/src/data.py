@@ -19,6 +19,15 @@ import pandas as pd
 import numpy  as np
 
 def load_data(path='../data/data_train.csv', categorical=True, test_size=0.05, train_size=0.1):
+    """
+    Load the main provided data.
+
+    Args:
+        * path (str): Path to the data
+        * categorical (bool): Are we predicting categorical data or doing a regression ?
+        * test_size (float): The fraction of data used for testing.
+        * train_size (float): The fraction of data used for training.
+    """
     ratings = pd.read_csv(path, dtype={'Prediction': np.int})
     pos = ratings.Id.str.extract('r([0-9]+)_c([0-9]+)', expand=True)
 
@@ -38,12 +47,21 @@ def load_data(path='../data/data_train.csv', categorical=True, test_size=0.05, t
         return train_x, train_x.Prediction, test_x, test_x.Prediction
 
 def load_subset(categorical=True, test_size=0.05, train_size=0.2):
+    """
+    Load a subset of the data.
+    """
     return load_data(categorical=categorical, test_size=test_size, train_size=train_size)
 
 def load_full(categorical=True, test_split=0.1):
+    """
+    Load the entire dataset.
+    """
     return load_data(categorical=categorical, test_size=test_split, train_size=None)
 
 def load_submission():
+    """
+    Load the submission data, used for prediction.
+    """
     path = '../data/sampleSubmission.csv'
     ratings = pd.read_csv(path, dtype={'Prediction': np.int})
     pos = ratings.Id.str.extract('r([0-9]+)_c([0-9]+)', expand=True)
