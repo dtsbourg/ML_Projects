@@ -173,7 +173,7 @@ def embedding_pipeline(suffix=''):
     Args:
         suffix (str): utility to add a uid to the embedding file.
 
-    Available embeddings :
+    Available embeddings:
         * Interaction Matrix
         * t-SNE
         * Spectral Embedding
