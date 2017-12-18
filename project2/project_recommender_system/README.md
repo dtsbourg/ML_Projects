@@ -16,17 +16,22 @@ based on [gw0/docker-keras](https://github.com/gw0/docker-keras).
 #### Running
 
 ```bash
- docker run -it cs433-project:run bash
+ docker run -it dtsbourg/cs433-project:latest bash
 ```
 
 The default image allows for exploration of the project from within the image.
 The `WORKDIR` is the base of the project. See the [Structure](#) section for more
-information on how the repository is organised.
+information on how the repository is organised. **The data has to be unzipped first
+so the model can load it.**
 
 You can then build the project as follows :
 
 ```bash
-cd src
+cd data
+tar -zxvf data.tgz
+cd embeddings
+tar -zxvf embeddings.tgz
+cd ../../src
 python3 main.py
 ```
 
@@ -59,10 +64,15 @@ sudo python3 -m pip install -r requirements.txt
 ```
 
 You can then run, train or predict with the model by using one of
-the following commands :
+the following commands. **The data has to be unzipped first
+so the model can load it.**
 
 ```bash
-cd src
+cd data
+tar -zxvf data.tgz
+cd embeddings
+tar -zxvf embeddings.tgz
+cd ../../src
 python3 neural.py # for the full pipeline, or
 python3 main.py --train # for training, or
 python3 main.py --predict # for prediction
@@ -103,7 +113,7 @@ The best model is named `best` : it is loaded by default in the prediction pipel
 
 The prediction provided by our model. The best prediction is named `submission_best.csv`.
 
-### `/norebook/`
+### `/notebook/`
 
 A couple notebooks we used for original exploration of the data, methods, and baselines.
 
