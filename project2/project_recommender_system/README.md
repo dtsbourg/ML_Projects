@@ -27,7 +27,7 @@ You can then build the project as follows :
 
 ```bash
 cd src
-python3 main.py
+python3 run.py
 ```
 
 By default the `main.py` script will launch both the training and prediction
@@ -36,8 +36,8 @@ the training (on our best performing model), please run :
 
 ```bash
 cd src
-python3 main.py --train # for training, or
-python3 main.py --predict # for prediction
+python3 run.py --train # for training, or
+python3 run.py --predict # for prediction
 ```
 
 #### building
@@ -68,9 +68,9 @@ tar -zxvf data.tgz
 cd embeddings
 tar -zxvf embeddings.tgz
 cd ../../src
-python3 neural.py # for the full pipeline, or
-python3 main.py --train # for training, or
-python3 main.py --predict # for prediction
+python3 run.py # for the full pipeline, or
+python3 run.py --train # for training, or
+python3 run.py --predict # for prediction
 ```  
 
 ## Structure
@@ -125,7 +125,3 @@ This is the training data that was provided to us.
 This contains the pre-computed embeddings we used in our model.
 
 ## Report
-
-
-
-> TODO : Document the API

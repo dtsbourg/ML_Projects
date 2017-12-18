@@ -28,7 +28,7 @@ import numpy  as np
 import datetime
 
 import models
-import run
+import pipe
 import data
 import utils
 
@@ -131,7 +131,7 @@ def training_pipeline(model, train_x, train_y, test_x, test_y):
     batch_size = 2048
     s = model
 
-    history = run.fit(model=s,
+    history = pipe.fit(model=s,
                       train_x=train_x,
                       train_y=train_y,
                       test_x=test_x,
@@ -158,7 +158,7 @@ def predict_pipeline(path):
 
     pred = m.predict(sub_data, batch_size=batch_size)
 
-    sub['Prediction'] = run.predict(pred)
+    sub['Prediction'] = pipe.predict(pred)
 
     model_uid = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S")
     save_path = '../res/pred/submission_'+model_uid+'.csv'
