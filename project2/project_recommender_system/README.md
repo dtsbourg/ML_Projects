@@ -21,17 +21,12 @@ based on [gw0/docker-keras](https://github.com/gw0/docker-keras).
 
 The default image allows for exploration of the project from within the image.
 The `WORKDIR` is the base of the project. See the [Structure](#) section for more
-information on how the repository is organised. **The data has to be unzipped first
-so the model can load it.**
+information on how the repository is organised.
 
 You can then build the project as follows :
 
 ```bash
-cd data
-tar -zxvf data.tgz
-cd embeddings
-tar -zxvf embeddings.tgz
-cd ../../src
+cd src
 python3 main.py
 ```
 
