@@ -1,4 +1,19 @@
-# import libraries
+"""
+CS-433 : Machine Learning
+Project 2 -- Recommender Systems
+
+Team :
+* Dylan Bourgeois
+* Antoine Mougeot
+* Philippe Verbist
+
+---
+
+exploration.py : interface for some of our early exploratory work, including figures
+                 for the report.
+
+"""
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -31,7 +46,7 @@ def explore(quick_load = False):
         pickle.dump(matrix, open( 'svg/explo_matrix.p', 'wb' ))
 
     print("There are {} users and {} movies".format(matrix.shape[0], matrix.shape[1]))
-    
+
     fig = plt.figure(figsize = (5,5))
     plt.imshow(matrix, aspect='auto')
     plt.title("Full matrix")
@@ -67,13 +82,13 @@ def explore(quick_load = False):
         np.random.seed(42)
         for i in range(1,len(matrix_subset[0])):
             rating_idx = np.random.choice(
-                matrix_subset[i, :].nonzero()[0], 
+                matrix_subset[i, :].nonzero()[0],
                 size=3)
             train_matrix[i, rating_idx] = 0.0
             test_matrix[i, rating_idx] = matrix_subset[i, rating_idx]
         pickle.dump(train_matrix, open( 'svg/explo_train_matrix.p', 'wb' ))
         pickle.dump(test_matrix, open( 'svg/explo_test_matrix.p', 'wb' ))
-    
+
     plt.subplot(132)
     plt.imshow(test_matrix[:150, :200], aspect='auto', interpolation='nearest')
     plt.tight_layout()
@@ -101,7 +116,7 @@ def explore(quick_load = False):
         for i in range(len(user_idx)): # takes time!
             sub_matrix[user_idx[i]-1, film_idx[i]-1] = submission_ratings.Prediction[i]
         pickle.dump(sub_matrix, open( 'svg/explo_sub_matrix.p', 'wb' ))
-        
+
     plt.figure(figsize = (5,5))
     plt.imshow(sub_matrix[:150, :200], aspect='auto', interpolation='nearest')
     plt.tight_layout()
@@ -199,7 +214,7 @@ def explore(quick_load = False):
         for j in range(matrix.shape[1]):
             if matrix[i][j] != 0:
                 n += matrix[i][j]
-                
+
     avg = n / np.count_nonzero(matrix)
 
     mean_per_user = matrix.sum(1)/(matrix!=0).sum(1)
@@ -212,7 +227,6 @@ def explore(quick_load = False):
     plt.ylabel('Number of users', fontsize = 16)
     fig.savefig('../res/img/differencetomean.png')
     plt.show()
-        
-    
-explore()
 
+
+explore()
