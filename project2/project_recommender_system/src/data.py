@@ -40,7 +40,7 @@ def load_data(path='../data/data_train.csv', categorical=True, test_size=0.05, t
 def load_subset(categorical=True, test_size=0.05, train_size=0.2):
     return load_data(categorical=categorical, test_size=test_size, train_size=train_size)
 
-def load_full(categorical=True, test_split=0.2):
+def load_full(categorical=True, test_split=0.1):
     return load_data(categorical=categorical, test_size=test_split, train_size=None)
 
 def load_submission():
