@@ -95,7 +95,7 @@ Contains the outputs of the models.
 
 Contains the plots for the training phase of our models.
 
-![[best](https://github.com/dtsbourg/ML_Projects/project2/project_recommender_system/res/img/Deep_Full_Final_1059256_train_117696_test_128_features_Adam_categorical_crossentropy_categorical_.png)]
+![best](https://github.com/dtsbourg/ML_Projects/blob/master/project2/project_recommender_system/res/img/Deep_Full_Final_1059256_train_117696_test_128_features_Adam_categorical_crossentropy_categorical_.png?raw=true)
 
 Figure : Test and Train losses for our best model
 
