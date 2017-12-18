@@ -41,8 +41,6 @@ def fit(model, train_x, train_y, test_x, test_y, embedding=False, epochs=10, bat
         epochs=epochs,
         callbacks=callbacks)
 
-    model.descr = model.description_str(suffix= str(max(history.epoch)+1) + "_epochs_", uid=True)
-
     return history
 
 def predict(categorical_predictions, voting='weighted'):

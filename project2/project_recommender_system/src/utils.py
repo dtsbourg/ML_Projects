@@ -28,7 +28,9 @@ def save_model_graph(model):
 
 def save_model(cm):
     try:
-        cm.model.save('../res/model/'+cm.descr+'.h5')
+        path = '../res/model/'+cm.descr
+        cm.model.save(path+'.h5')
+        return path
     except Exception as e:
         raise
 
