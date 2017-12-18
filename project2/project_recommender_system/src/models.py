@@ -55,33 +55,45 @@ class Network(object):
         if isinstance(self.optimizer, str):
             model_params = self.optimizer + "_" + self.loss + "_"
         else:
-            model_params = "SGD" + "_" + self.loss + "_"
+            model_params = "Adam" + "_" + self.loss + "_"
         model_categ = ""
         if self.n_classes > 1:
             model_categ = "categorical_"
-        model_uid = ""
-        if uid is True:
-            model_uid = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S")
+        model_uid = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S")
         return model_type + model_size + model_params + model_categ + suffix
 
 class ShallowNetwork(Network):
     """docstring for ShallowNetwork."""
     def __init__(self, *args, **kwargs):
-        super(ShallowNetwork, self).__init__(*args, **kwargs)
         self.model_type = "Shallow_Final"
+        super(ShallowNetwork, self).__init__(*args, **kwargs)
 
     def model_func(self):
         input_i = layers.Input(shape=[1])
         i = layers.Embedding(self.n_items+1, self.k_features)(input_i)
         i = layers.Flatten()(i)
-        i = layers.normalization.BatchNormalization()(i)
 
         input_u = layers.Input(shape=[1])
         u = layers.Embedding(self.n_users+1, self.k_features)(input_u)
         u = layers.Flatten()(u)
-        u = layers.normalization.BatchNormalization()(u)
 
-        nn = layers.concatenate([i, u])
+        input_i_spectral = layers.Input(shape=[self.EMBED_FEAT])
+        input_u_spectral = layers.Input(shape=[self.EMBED_FEAT])
+
+        input_i_lle = layers.Input(shape=[self.EMBED_FEAT])
+        input_u_lle = layers.Input(shape=[self.EMBED_FEAT])
+
+        input_i_fa = layers.Input(shape=[self.EMBED_FEAT])
+        input_u_fa = layers.Input(shape=[self.EMBED_FEAT])
+
+        input_i_nmf = layers.Input(shape=[self.EMBED_FEAT])
+        input_u_nmf = layers.Input(shape=[self.EMBED_FEAT])
+
+        nn = layers.concatenate([i, u,
+                                 input_i_spectral, input_u_spectral,
+                                 input_i_lle, input_u_lle,
+                                 input_i_fa, input_u_fa,
+                                 input_i_nmf, input_u_nmf])
 
         nn = layers.Dense(512, activation='relu')(nn)
         nn = layers.Dropout(self.DROPOUT)(nn)
@@ -91,7 +103,12 @@ class ShallowNetwork(Network):
 
         output = layers.Dense(self.n_classes, activation='softmax')(nn)
 
-        model = models.Model([input_i, input_u], output)
+        model = models.Model([input_i, input_u,
+                             input_i_spectral, input_u_spectral,
+                             input_i_lle, input_u_lle,
+                             input_i_fa, input_u_fa,
+                             input_i_nmf, input_u_nmf],
+                             output)
         model.compile(optimizer=self.optimizer, loss=self.loss)
         return model
 
@@ -99,8 +116,8 @@ class ShallowNetwork(Network):
 class DeepNetwork(Network):
     """docstring for DeepNetwork."""
     def __init__(self, *args, **kwargs):
-        super(DeepNetwork, self).__init__(*args, **kwargs)
         self.model_type = "Deep_Full_Final"
+        super(DeepNetwork, self).__init__(*args, **kwargs)
 
     def model_func(self):
         input_i = layers.Input(shape=[1])
@@ -140,7 +157,7 @@ class DeepNetwork(Network):
         nn = layers.normalization.BatchNormalization()(nn)
         nn = layers.Dense(128, activation='relu')(nn)
 
-        output = layers.Dense(5, activation='softmax')(nn)
+        output = layers.Dense(self.n_classes, activation='softmax')(nn)
 
         model = models.Model([input_i, input_u,
                               input_i_spectral, input_u_spectral,
@@ -154,8 +171,8 @@ class DeepNetwork(Network):
 class DenseNetwork(Network):
     """docstring for ShallowNetwork."""
     def __init__(self, *args, **kwargs):
-        super(DenseNetwork, self).__init__(*args, **kwargs)
         self.model_type = "Dense_Final"
+        super(DenseNetwork, self).__init__(*args, **kwargs)
 
     def model_func(self):
         input_i = layers.Input(shape=[1])
@@ -196,7 +213,12 @@ class DenseNetwork(Network):
 
         output = layers.Dense(self.n_classes, activation='softmax')(nn)
 
-        model = models.Model([input_i, input_u], output)
+        model = models.Model([input_i, input_u,
+                              input_i_spectral, input_u_spectral,
+                              input_i_lle, input_u_lle,
+                              input_i_fa, input_u_fa,
+                              input_i_nmf, input_u_nmf],
+                              output)
 
         model.compile(optimizer=self.optimizer, loss=self.loss)
         return model
