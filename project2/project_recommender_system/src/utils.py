@@ -24,9 +24,15 @@ import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
 def save_model_graph(model):
+    """
+    Save the model architecture.
+    """
     plot_model(model, to_file='../res/model/' + model.descr + '.png')
 
 def save_model(cm):
+    """
+    Save the model to binary for later loading.
+    """
     try:
         path = '../res/model/'+cm.descr
         cm.model.save(path+'.h5')
@@ -35,9 +41,16 @@ def save_model(cm):
         raise
 
 def load_model(path):
+    """
+    Load a saved model.
+    """
     return models.load_model(path)
 
 def plot(description, history, show=False):
+    """
+    Plot the loss of a training procedure. The figure can be shown
+    or saved to an image.
+    """
     plt.plot(history.history['loss'], label='loss')
     plt.plot(history.history['val_loss'], label='val_loss')
     plt.xlabel('epochs')
@@ -47,6 +60,10 @@ def plot(description, history, show=False):
         plt.savefig('../res/img/' + description + '.png')
 
 def build_interaction_matrix(users, items, ratings, suffix=''):
+    """
+    Build user/movie interaction matrix, a nb(users)xnb(items) matrix,
+    where each entry is the rating user u gave item i.
+    """
     matrix = np.zeros((max(users), max(items)), dtype=np.int)
 
     for i in range(len(users)):
@@ -56,6 +73,17 @@ def build_interaction_matrix(users, items, ratings, suffix=''):
     return path_str
 
 def build_embedding(path, embedding=None):
+    """
+    Build the desired embedding and save to specified path.
+
+    Available embeddings :
+        * Interaction Matrix
+        * t-SNE (unused)
+        * Spectral Embedding
+        * Locally Linear Embedding
+        * Non-negative Matrix Factorisation
+        * Factor Analysis
+    """
     if embedding == 'spectral':
         mat = np.load(path)
         u_spectral = manifold.SpectralEmbedding(n_components=64, random_state=0, n_jobs=8).fit_transform(mat)
@@ -115,6 +143,9 @@ def build_nmf_embedding(path, suffix="", save=True):
     return u_e, i_e
 
 def load_full_embedding(data):
+    """
+    Load the full pre-computed embeddings.
+    """
     item_idx = data[0]; user_idx = data[1]
     data += load_embedding(path='../data/embeddings/items_spectral_64.npy', idx=item_idx)
     data += load_embedding(path='../data/embeddings/users_spectral_64.npy', idx=user_idx)
@@ -127,6 +158,9 @@ def load_full_embedding(data):
     return data
 
 def load_embedding(path, idx):
+    """
+    Load a precomputed embedding, returning only the desired subset.
+    """
     emb = np.load(path)
     t_emb = emb[idx - 1]
     return [t_emb]
