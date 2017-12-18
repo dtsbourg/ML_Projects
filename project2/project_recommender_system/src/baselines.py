@@ -1,3 +1,18 @@
+"""
+CS-433 : Machine Learning
+Project 2 -- Recommender Systems
+
+Team :
+* Dylan Bourgeois
+* Antoine Mougeot
+* Philippe Verbist
+
+---
+
+baselines.py : interface for running the baselines.
+
+"""
+
 import pandas as pd
 import numpy as np
 import os
@@ -51,20 +66,20 @@ def baselines():
 
     users = pd.DataFrame(index = range(10000), columns=['User', 'Mean'])
     movies = pd.DataFrame(index = range(1000), columns=['Item', 'Mean'])
- 
+
     median = train['Rating'].median()
     mean = train['Rating'].mean()
 
     if False and os.path.isfile("svg/users_baseline.p") and os.path.isfile("svg/movies_baseline.p"):
         users  = pd.read_pickle('svg/users_baseline.p')
-        movies = pd.read_pickle('svg/movies_baseline.p')       
+        movies = pd.read_pickle('svg/movies_baseline.p')
     else:
         for i in range(0, 10000):
             users.at[i,'User'] = i+1
-            
+
         for i in range(0, 1000):
             movies.at[i,'Movie'] = i+1
-            
+
         mean_u = dict_mean_user(train)
         for i in range(0,10000):
              users.at[i,'Mean'] = list(mean_u.values())[i]
@@ -99,13 +114,13 @@ def baselines():
         for index, row in train.iterrows():
             train.at[index, 'User_Mean']  =  users.at[ int(train.at[index,'User'] )-1,'Mean']
             train.at[index, 'Movie_Mean'] =  movies.at[int(train.at[index,'Item'])-1,'Mean']
-            
+
             train.at[index, 'Global_Mean'] = mean
             train.at[index, 'Global_Median'] =median
 
             train.at[index, 'User_Median']  = users.at[ int(train.at[index,'User']) -1,'Median']
             train.at[index, 'Movie_Median'] = movies.at[int(train.at[index,'Item'])-1,'Median']
-            
+
             train.at[index, 'Movie_RegLin'] = movies.at[int(train.at[index,'Item'])-1,'Reg Lin Value']
 
             train.at[index, 'Movie_Mean_Corrected']   = users.at[int(train.at[index,'Item'])-1, 'Mean']   + users.at[int(train.at[index,'User'])-1,'Difference_To_Mean']
@@ -113,7 +128,7 @@ def baselines():
 
             if index % 10000 == 0:
                 print("Train: {0:.2f}".format(index/len(train["User"])))
-                
+
         train.to_pickle('svg/baseline_train.p')
 
     if os.path.isfile('svg/baseline_test.p'):
@@ -124,13 +139,13 @@ def baselines():
         for index, row in test.iterrows():
             test.at[index, 'User_Mean']  = users.at[ int(test.at[index, 'User'])-1, 'Mean']
             test.at[index, 'Movie_Mean'] = movies.at[int(test.at[index, 'Item'])-1, 'Mean']
-            
+
             test.at[index, 'Global_Mean'] = mean
             test.at[index, 'Global_Median'] = median
 
             test.at[index, 'User_Median']  = users.at[ int(test.at[index,'User'])-1, 'Median']
             test.at[index, 'Movie_Median'] = movies.at[int(test.at[index,'Item'])-1, 'Median']
-            
+
             test.at[index, 'Movie_RegLin'] = movies.at[int(test.at[index, 'Item'])-1, 'Reg Lin Value']
 
             test.at[index, 'Movie_Mean_Corrected']  = users.at[int(test.at[index,'Item'])-1,'Mean']   + users.at[int(test.at[index,'User'])-1, 'Difference_To_Mean']
@@ -140,9 +155,9 @@ def baselines():
                 print("Test: {0:.2f}".format(index/len(train["User"])))
             counter += 1
         test.to_pickle('svg/baseline_test.p')
-                 
 
-    Baselines = ['Global_Mean', 'User_Mean', 'Movie_Mean', 'Movie_Mean_Corrected', 
+
+    Baselines = ['Global_Mean', 'User_Mean', 'Movie_Mean', 'Movie_Mean_Corrected',
                  'Global_Median', 'User_Median', 'Movie_Median', 'Movie_Median_Corrected', 'Movie_RegLin']
 
 
@@ -151,20 +166,20 @@ def baselines():
         print('RMSE Train for {} is : {:.4f}'.format(Baselines[i],
                                            math.sqrt(mean_squared_error(train[Baselines[i]],
                                                                         train['Rating']))))
- 
+
         print('RMSE Test  for {} is : {:.4f}'.format(Baselines[i],
                                            math.sqrt(mean_squared_error(test[Baselines[i]],
                                                                         test['Rating']))))
 
 
 def blending_fun(x):
-    Baselines = ['Global_Mean', 'User_Mean', 'Movie_Mean', 'Movie_Mean_Corrected', 
+    Baselines = ['Global_Mean', 'User_Mean', 'Movie_Mean', 'Movie_Mean_Corrected',
                  'Global_Median', 'User_Median', 'Movie_Median', 'Movie_Median_Corrected', 'Movie_RegLin']
 
     res = 0
     for i in range(len(Baselines)):
         res += x[i] * train[Baselines[i]]
-        
+
     rmse = math.sqrt(mean_squared_error(res, train['Rating']))
     return rmse
 
@@ -172,7 +187,7 @@ def blending_fun(x):
 def blending():
     myList = [1., 1., 1., 1., 1., 1., 1., 1., 1.]
     x0 = [x / 9.0 for x in myList]
-    
+
     res = sc.optimize.minimize(blending_fun, x0, method='SLSQP', options={'disp': True})
     print(res)
 

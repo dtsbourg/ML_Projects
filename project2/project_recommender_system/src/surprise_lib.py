@@ -1,3 +1,19 @@
+"""
+CS-433 : Machine Learning
+Project 2 -- Recommender Systems
+
+Team :
+* Dylan Bourgeois
+* Antoine Mougeot
+* Philippe Verbist
+
+---
+
+surprise_lib.py : interface for running the baselines with Suprise.
+
+We used the Surprise lib to compute baselines in this project.
+"""
+
 from surprise import SVD, SVDpp, NMF
 from surprise import Dataset, Reader
 from surprise import evaluate, print_perf
@@ -30,7 +46,7 @@ def runSurprise(algo, train, test, algo_string, n_folds=5, writeCSV=False, file_
         file_out = open(file_name, 'w')
         file_out.truncate()
         file_out.write('Id,Prediction\n')
-        
+
         for index, row in sub.iterrows():
             file_out.write("r{us}_c{mo},{res}\n".format(us=row['User'],mo= row['Item'],
                         res=algo.estimate(row['User']-1, row['Item']-1)))
@@ -61,8 +77,3 @@ def runAll():
 
         runSurprise(SVDpp(), train, test, "SVDpp")
         test.to_pickle('svg/surprise_SVDpp_test.p')
-
-
-        
-
-    
