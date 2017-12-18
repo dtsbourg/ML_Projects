@@ -28,7 +28,24 @@ import numpy as np
 
 
 class Network(object):
-    """docstring for Network."""
+    """
+    Defines the Network abstract class, exposing the structure
+    of the models we will be developping.
+
+    Attributes:
+        k_features (int): number of features in the embedding of the input layer.
+        n_items, n_users (int): number of items / users in the dataset.
+        n_classes (int): 5 if we are training for categorical, 1 for regression
+        n_train_samples, n_test_samples (int): number of samples in the data set
+        optimizer (str or Keras.Optimizer): Optimizer used in the model (usually 'sgd' or 'adam')
+        loss (str or Keras.Loss): Loss function (usually 'mse' or 'categorical_crossentropy')
+        EMBED_FEAT (int): Number of features in the provided embeddings
+        DROPOUT (float): Dropout rate in the network.
+        EMBED_REG (float): Regularisation parameter for the learned embeddings ($\lambda$)
+        model (Keras.Model): The actual compiled Keras model, defined in a model_func
+        model_type (str): Model name for bookkeeping.
+        descr (str): Precise model description for bookkeeping.
+    """
     def __init__(self, k_features=64, n_items=10000, n_users=1000, n_train_samples=10, n_test_samples=10, n_classes=5, optimizer='sgd', loss='categorical_crossentropy'):
         super(Network, self).__init__()
         self.k_features = k_features
@@ -47,9 +64,16 @@ class Network(object):
         self.descr = self.description_str()
 
     def model_func(self):
+        """
+        Virtual function for the Network class, in which the user must
+        create and return the Keras Model that this Network wraps.
+        """
         raise NotImplementedError()
 
     def description_str(self, suffix="", uid=False):
+        """
+        Helper to generate a unique identifier for saving the model.
+        """
         model_type = self.model_type + "_"
         model_size = str(self.n_train_samples) + "_train_" + str(self.n_test_samples) + "_test_" + str(self.k_features) + "_features_"
         if isinstance(self.optimizer, str):
@@ -63,7 +87,7 @@ class Network(object):
         return model_type + model_size + model_params + model_categ + suffix
 
 class ShallowNetwork(Network):
-    """docstring for ShallowNetwork."""
+    """Shallow Neural Network"""
     def __init__(self, *args, **kwargs):
         self.model_type = "Shallow_Final"
         super(ShallowNetwork, self).__init__(*args, **kwargs)
@@ -114,7 +138,10 @@ class ShallowNetwork(Network):
 
 
 class DeepNetwork(Network):
-    """docstring for DeepNetwork."""
+    """
+    Deep Neural Network
+    This is the model with which we obtained the best results.
+    """
     def __init__(self, *args, **kwargs):
         self.model_type = "Deep_Full_Final"
         super(DeepNetwork, self).__init__(*args, **kwargs)
@@ -169,7 +196,7 @@ class DeepNetwork(Network):
         return model
 
 class DenseNetwork(Network):
-    """docstring for ShallowNetwork."""
+    """Dense Neural Network"""
     def __init__(self, *args, **kwargs):
         self.model_type = "Dense_Final"
         super(DenseNetwork, self).__init__(*args, **kwargs)
