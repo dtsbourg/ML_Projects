@@ -9,7 +9,7 @@ Team :
 
 ---
 
-main.py : main interface.
+run.py : main interface.
 
 Here you should call one of the available or custom pipelines.
 """

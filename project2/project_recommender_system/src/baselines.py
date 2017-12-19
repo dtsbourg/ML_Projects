@@ -57,6 +57,11 @@ def dict_nbrating_movie(df):
 
 
 def baselines():
+    users_bs_path = os.path.join('..','data','baselines','users_baseline.p')
+    movies_bs_path = os.path.join('..','data','baselines','movies_baseline.p')
+    train_bs_path = os.path.join('..','data','baselines','train_baseline.p')
+    test_bs_path = os.path.join('..','data','baselines','test_baseline.p')
+
     train, _, test, _ = data.load_data(categorical=False, test_size=0.1, train_size=0.9)
     train["Rating"] = train.Prediction
     test["Rating"]  = test.Prediction
@@ -70,9 +75,9 @@ def baselines():
     median = train['Rating'].median()
     mean = train['Rating'].mean()
 
-    if False and os.path.isfile("svg/users_baseline.p") and os.path.isfile("svg/movies_baseline.p"):
-        users  = pd.read_pickle('svg/users_baseline.p')
-        movies = pd.read_pickle('svg/movies_baseline.p')
+    if False and os.path.isfile(users_bs_path) and os.path.isfile(movies_bs_path):
+        users  = pd.read_pickle(users_bs_path)
+        movies = pd.read_pickle(movies_bs_path)
     else:
         for i in range(0, 10000):
             users.at[i,'User'] = i+1
@@ -107,12 +112,12 @@ def baselines():
         users['Difference_To_Mean'] = users['Mean'].mean() - users['Mean']
 
 
-    if os.path.isfile('svg/baseline_train.p'):
-        train = pd.read_pickle('svg/baseline_train.p')
+    if os.path.isfile(train_bs_path):
+        train = pd.read_pickle(train_bs_path)
     else:
         print("Generate Train estimations")
         for index, row in train.iterrows():
-            train.at[index, 'User_Mean']  =  users.at[ int(train.at[index,'User'] )-1,'Mean']
+            train.at[index, 'User_Mean']  =  users.at[ int(train.at[index,'User'])-1,'Mean']
             train.at[index, 'Movie_Mean'] =  movies.at[int(train.at[index,'Item'])-1,'Mean']
 
             train.at[index, 'Global_Mean'] = mean
@@ -129,10 +134,10 @@ def baselines():
             if index % 10000 == 0:
                 print("Train: {0:.2f}".format(index/len(train["User"])))
 
-        train.to_pickle('svg/baseline_train.p')
+        train.to_pickle(train_bs_path)
 
-    if os.path.isfile('svg/baseline_test.p'):
-        test = pd.read_pickle('svg/baseline_test.p')
+    if os.path.isfile(test_bs_path):
+        test = pd.read_pickle(test_bs_path)
     else:
         print("Generate Test estimations")
         counter = 0
@@ -154,21 +159,21 @@ def baselines():
             if counter % 10000 == 0:
                 print("Test: {0:.2f}".format(index/len(train["User"])))
             counter += 1
-        test.to_pickle('svg/baseline_test.p')
+        test.to_pickle(test_bs_path)
 
 
-    Baselines = ['Global_Mean', 'User_Mean', 'Movie_Mean', 'Movie_Mean_Corrected',
+    baselines = ['Global_Mean', 'User_Mean', 'Movie_Mean', 'Movie_Mean_Corrected',
                  'Global_Median', 'User_Median', 'Movie_Median', 'Movie_Median_Corrected', 'Movie_RegLin']
 
 
 
-    for i in range(len(Baselines)):
-        print('RMSE Train for {} is : {:.4f}'.format(Baselines[i],
-                                           math.sqrt(mean_squared_error(train[Baselines[i]],
+    for i in range(len(baselines)):
+        print('RMSE Train for {} is : {:.4f}'.format(baselines[i],
+                                           math.sqrt(mean_squared_error(train[baselines[i]],
                                                                         train['Rating']))))
 
-        print('RMSE Test  for {} is : {:.4f}'.format(Baselines[i],
-                                           math.sqrt(mean_squared_error(test[Baselines[i]],
+        print('RMSE Test  for {} is : {:.4f}'.format(baselines[i],
+                                           math.sqrt(mean_squared_error(test[baselines[i]],
                                                                         test['Rating']))))
 
 

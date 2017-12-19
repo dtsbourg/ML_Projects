@@ -1,3 +1,18 @@
+"""
+CS-433 : Machine Learning
+Project 2 -- Recommender Systems
+
+Team :
+* Dylan Bourgeois
+* Antoine Mougeot
+* Philippe Verbist
+
+---
+
+baselines.py : interface for running the blending procedure.
+
+"""
+
 import pandas as pd
 import numpy as np
 import os
@@ -15,11 +30,11 @@ import statistics as stat
 
 
 def blending_fun(x):
-    Baselines = ['Global_Mean', 'User_Mean', 'Movie_Mean', 'Movie_Mean_Corrected', 
+    Baselines = ['Global_Mean', 'User_Mean', 'Movie_Mean', 'Movie_Mean_Corrected',
                  'Global_Median', 'User_Median', 'Movie_Median', 'Movie_Median_Corrected', 'Movie_RegLin']
 
     Surprise = ['SVD', 'SVDpp', 'NML']
-    
+
     res = 0
     for i in range(len(Baselines)):
         res += x[i] * test_baseline[Baselines[i]]
@@ -35,16 +50,16 @@ def blending_fun(x):
 def blending():
     myList = [1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.]
     x0 = [x / 9.0 for x in myList]
-    
+
     res = sc.optimize.minimize(blending_fun, x0, method='SLSQP', options={'disp': True})
     print(res)
 
 
 baselines.run()
 sl.runAll()
-test_baseline  = pd.read_pickle('svg/baseline_test.p')
-test_sl_svd    = pd.read_pickle('svg/surprise_SVD_test.p')
-test_sl_svdpp  = pd.read_pickle('svg/surprise_SVDpp_test.p')
-test_sl_nmf    = pd.read_pickle('svg/surprise_NMF_test.p')
+test_baseline  = pd.read_pickle(os.path.join('..','data','baselines','baseline_test.p'))
+test_sl_svd    = pd.read_pickle(os.path.join('..','data','baselines','surprise_SVD_test.p'))
+test_sl_svdpp  = pd.read_pickle(os.path.join('..','data','baselines','surprise_SVDPP_test.p'))
+test_sl_nmf    = pd.read_pickle(os.path.join('..','data','baselines','surprise_NMF_test.p'))
 
 blending()

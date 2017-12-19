@@ -54,26 +54,29 @@ def runSurprise(algo, train, test, algo_string, n_folds=5, writeCSV=False, file_
 
 
 def runAll():
-    if not os.path.isfile('svg/surprise_SVD_test.p'):
+    svd_path = os.path.join('..','data','baselines','surprise_SVD_test.p')
+    if not os.path.isfile(svd_path):
         train, _, test, _ = datahelper.load_data(test_size=0.1, train_size=0.9)
         train["Rating"] = train.Prediction
         test["Rating"] = test.Prediction
 
         runSurprise(SVD(n_epochs=30, lr_all=0.001, reg_all=0.001), train, test, "SVD")
-        test.to_pickle('svg/surprise_SVD_test.p')
+        test.to_pickle(svd_path)
 
-    if not os.path.isfile('svg/surprise_NMF_test.p'):
+    nmf_path = os.path.join('..','data','baselines','surprise_NMF_test.p')
+    if not os.path.isfile(nmf_path):
         train, _, test, _ = datahelper.load_data(test_size=0.1, train_size=0.9)
         train["Rating"] = train.Prediction
         test["Rating"] = test.Prediction
 
         runSurprise(NMF(), train, test, "NMF")
-        test.to_pickle('svg/surprise_NMF_test.p')
+        test.to_pickle(nmf_path)
 
-    if not os.path.isfile('svg/surprise_SVDpp_test.p'):
+    svdpp_path = os.path.join('..','data','baselines','surprise_SVDPP_test.p')
+    if not os.path.isfile(svdpp_path):
         train, _, test, _ = datahelper.load_data(test_size=0.1, train_size=0.2)
         train["Rating"] = train.Prediction
         test["Rating"] = test.Prediction
 
         runSurprise(SVDpp(), train, test, "SVDpp")
-        test.to_pickle('svg/surprise_SVDpp_test.p')
+        test.to_pickle(svdpp_path)
