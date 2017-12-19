@@ -75,6 +75,8 @@ python3 run.py --predict # for prediction
 
 ## Structure
 
+### Repository
+
 In tree form, the repository has the following structure.
 
 ```bash
@@ -113,4 +115,20 @@ In tree form, the repository has the following structure.
     └── utils.py
 ```
 
+### `src`
+
+* `baselines.py` : interface for running the baselines.
+* `blending.py` : interface for running the blending procedure
+* `data.py` : main interface for interacting with the dataset. Defines a set of helper functions to load and manipulate the data.
+* `exploration.py` : interface for some of our early exploratory work, including figures for the report.
+* `model_graveyard.py` : A collection of experimental, partial, unused or deprecated models.
+* `models.py` : main model definition module.
+* `pipe.py` : interface for heavy lifting.
+* `pipeline.py` : Defines some common pipeline used in this project.
+* `run.py` : main interface.
+* `surprise_lib.py` : interface for running the baselines with [Suprise](http://surpriselib.com/).
+* `utils.py` : Defining several useful utilities.
+
 ## Report
+
+
