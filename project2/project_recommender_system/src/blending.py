@@ -30,6 +30,16 @@ import statistics as stat
 
 
 def blending_fun(x):
+    """
+    Function to be optimized. All outputs of the algorithms are given a weight (x),
+    and are then summed up. The resulting estimated rating
+    are then evaluted with RMSE.
+    The lower value, the best.
+
+    Args:
+        * x (list): the weights to be given to each function. Must be of length 12
+    
+    """
     Baselines = ['Global_Mean', 'User_Mean', 'Movie_Mean', 'Movie_Mean_Corrected',
                  'Global_Median', 'User_Median', 'Movie_Median', 'Movie_Median_Corrected', 'Movie_RegLin']
 
@@ -48,18 +58,26 @@ def blending_fun(x):
 
 
 def blending():
+    """
+    Runs the optimization on 'blending_fun', to find the best vector x.
+    """
     myList = [1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.]
     x0 = [x / 9.0 for x in myList]
 
     res = sc.optimize.minimize(blending_fun, x0, method='SLSQP', options={'disp': True})
     print(res)
 
+def run()
+    """
+    Runs the baselines algorithms (the result is stored in a pickle).
+    Runs the Surprise algorithms (the result is stored in a pickle).
+    Starts the blending.
+    """
+    baselines.run()
+    sl.runAll()
+    test_baseline  = pd.read_pickle(os.path.join('..','data','baselines','baseline_test.p'))
+    test_sl_svd    = pd.read_pickle(os.path.join('..','data','baselines','surprise_SVD_test.p'))
+    test_sl_svdpp  = pd.read_pickle(os.path.join('..','data','baselines','surprise_SVDPP_test.p'))
+    test_sl_nmf    = pd.read_pickle(os.path.join('..','data','baselines','surprise_NMF_test.p'))
 
-baselines.run()
-sl.runAll()
-test_baseline  = pd.read_pickle(os.path.join('..','data','baselines','baseline_test.p'))
-test_sl_svd    = pd.read_pickle(os.path.join('..','data','baselines','surprise_SVD_test.p'))
-test_sl_svdpp  = pd.read_pickle(os.path.join('..','data','baselines','surprise_SVDPP_test.p'))
-test_sl_nmf    = pd.read_pickle(os.path.join('..','data','baselines','surprise_NMF_test.p'))
-
-blending()
+    blending()

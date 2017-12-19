@@ -23,6 +23,19 @@ import data as datahelper
 import os
 
 def runSurprise(algo, train, test, algo_string, n_folds=5, writeCSV=False, file_name="result.csv"):
+    """
+    Run the fitting procedure on the training data. Write the result for the test
+    data in its "Result" data field.
+
+    Args:
+        algo: Surprise algorithm (SVD, SVDpp, NMF, etc)
+        train (Panda DataFrame): training data
+        test (Panda dDtaFrame): test data
+        algo_string (string): printable name of the algorithm
+        n_folds (int): Number of k-folds
+        writeCSV (bool): set to True to write a .csv submission
+        file_name (string): name for the .csv file
+    """
     if writeCSV:
         sub = datahelper.load_submission()
 
@@ -54,6 +67,14 @@ def runSurprise(algo, train, test, algo_string, n_folds=5, writeCSV=False, file_
 
 
 def runAll():
+    """
+    Run 3 different algorithms from the Surprise library: SVD, SVDpp and NMF.
+    Loads data from "data/data/data_train.csv",
+    divides it in "train" (for learning) and "test" (for evaluating),
+    and runs the Surprise algorithms on it.
+    The "test" data is stored in a pickle for later use.
+    """
+    
     svd_path = os.path.join('..','data','baselines','surprise_SVD_test.p')
     if not os.path.isfile(svd_path):
         train, _, test, _ = datahelper.load_data(test_size=0.1, train_size=0.9)
