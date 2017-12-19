@@ -75,53 +75,42 @@ python3 run.py --predict # for prediction
 
 ## Structure
 
-### `.`
-The TLD contains :
-* `README.md`
-* `notes.md` some working notes on the project used within the group
-* `Dockerfile`
-* `requirements.txt` specifying the required packages
-* `.gitignore`
+In tree form, the repository has the following structure.
 
-### `/src/`
-
-Contains all the logic for our project.
-
-### `/res/`
-
-Contains the outputs of the models.
-
-#### `/res/img/`
-
-Contains the plots for the training phase of our models.
-
-![best](https://github.com/dtsbourg/ML_Projects/blob/master/project2/project_recommender_system/res/img/Deep_Full_Final_1059256_train_117696_test_128_features_Adam_categorical_crossentropy_categorical_.png?raw=true)
-
-Figure : Test and Train losses for our best model
-
-#### `/res/model/`
-
-The checkpoint files for the pre-trained models, which can be loaded later on.
-The best model is named `best` : it is loaded by default in the prediction pipeline.
-
-#### `/res/pred/`
-
-The prediction provided by our model. The best prediction is named `submission_best.csv`.
-
-### `/notebook/`
-
-A couple notebooks we used for original exploration of the data, methods, and baselines.
-
-### `/data/`
-
-This contains the data used for this project.
-
-#### `/data/data.zip`
-
-This is the training data that was provided to us.
-
-#### `/data/embeddings/embeddings.zip`
-
-This contains the pre-computed embeddings we used in our model.
+```bash
+.
+├── Dockerfile
+├── README.md
+├── data                    # Datasets
+│   ├── data.tgz            # Given data
+│   ├── embeddings          # Pre-computed embeddings
+│       └── embeddings.tgz
+├── notebook                # For data exploration
+│   ├── Exploration.ipynb
+│   └── NN.ipynb
+├── notes.md               # Internal project notes
+├── requirements.txt       # python libraries
+├── res                    # Results of our model
+│   ├── img                # Loss plots
+│   │   └── ....png
+│   ├── model              # Model checkpoints 
+│   │   ├── Dense_Final
+│   │   ├── Shallow_Final
+│   │   └── best
+│   └── pred               # Model predictions
+│       └── submission_best.csv
+└── src
+    ├── baselines.py
+    ├── blending.py
+    ├── data.py
+    ├── exploration.py
+    ├── model_graveyard.py
+    ├── models.py
+    ├── pipe.py
+    ├── pipeline.py
+    ├── run.py
+    ├── surprise_lib.py
+    └── utils.py
+```
 
 ## Report
