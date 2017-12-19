@@ -16,7 +16,8 @@ based on [gw0/docker-keras](https://github.com/gw0/docker-keras).
 #### Running
 
 ```bash
- docker run -it dtsbourg/cs433-project:latest bash
+docker pull dtsbourg/cs433-project
+docker run -it dtsbourg/cs433-project:latest bash
 ```
 
 The default image allows for exploration of the project from within the image.
@@ -71,7 +72,56 @@ cd ../../src
 python3 run.py # for the full pipeline, or
 python3 run.py --train # for training, or
 python3 run.py --predict # for prediction
-```  
+``` 
+
+### Reproducing our results
+
+This can be done in done either in Docker or locally, as explained above but reiterated here for clarity :
+
+##### Docker
+Download and start the Docker image :
+
+```bash
+docker pull dtsbourg/cs433-project
+docker run -it dtsbourg/cs433-project:latest bash
+```
+
+Once it is running, you can produce the predicted output with :
+
+```bash
+cd src
+python3 run.py --prediction
+```
+
+A file `submission_{date}.csv` will be produced in `res/pred/` with the resulting predictions.
+
+
+##### Local
+Download the repo and install its dependencies :
+
+```bash
+git clone https://github.com/dtsbourg/ML_Projects
+cd ML_Projects/project2/project_recommender_system
+sudo python3 -m pip install -r requirements.txt
+```
+
+Once the installation is over, you will have to unzip the data :
+
+```bash
+cd data
+tar -zxvf data.tgz
+cd embeddings
+tar -zxvf embeddings.tgz
+```
+
+Finally the submission can be generated as before with :
+
+```bash
+cd ../../src
+python3 run.py --prediction
+```
+
+A file `submission_{date}.csv` will be produced in `res/pred/` with the resulting predictions.
 
 ## Structure
 
