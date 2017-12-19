@@ -31,7 +31,7 @@ cd src
 python3 run.py
 ```
 
-By default the `main.py` script will launch both the training and prediction
+By default the `run.py` script will launch both the training and prediction
 pipelines. To run only the prediction (by default with our best model) or only
 the training (on our best performing model), please run :
 
