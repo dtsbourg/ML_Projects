@@ -127,6 +127,17 @@ A file `submission_{date}.csv` will be produced in `res/pred/` with the resultin
 
 We have tested on a [Theano](http://www.deeplearning.net/software/theano/) and a [Tensorflow](https://www.tensorflow.org) backend, using CPU or GPU. Both should yield the same results, but you can set your preference by changing the Keras configuration file located in `~/.keras/keras.json`. The default is Tensorflow.
 
+### Time considerations
+
+| Step                    | CPU\*   | GPU\**  |
+| ----------------------- |:-------:|:-------:|
+| Training (per epoch)    | 350 s   | 12s     |
+| Training (total)        | 3 h     | 6 min   |
+| Prediction              | 2 min   | 20s     |
+
+\* Intel i7 CPU 2.3GHz
+\** [NVIDIA Titan M60](https://www.nvidia.com/object/tesla-m60.html)
+
 ## Structure
 
 ### Repository
