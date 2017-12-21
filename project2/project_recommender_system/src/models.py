@@ -89,8 +89,9 @@ class Network(object):
 class ShallowNetwork(Network):
     """Shallow Neural Network"""
     def __init__(self, *args, **kwargs):
-        self.model_type = "Shallow_Final"
         super(ShallowNetwork, self).__init__(*args, **kwargs)
+        self.model_type = "Shallow_Final"
+        self.descr = self.description_str()
 
     def model_func(self):
         input_i = layers.Input(shape=[1])
@@ -143,8 +144,9 @@ class DeepNetwork(Network):
     This is the model with which we obtained the best results.
     """
     def __init__(self, *args, **kwargs):
-        self.model_type = "Deep_Full_Final"
         super(DeepNetwork, self).__init__(*args, **kwargs)
+        self.model_type = "Deep_Full_Final"
+        self.descr = self.description_str()
 
     def model_func(self):
         input_i = layers.Input(shape=[1])
@@ -198,8 +200,8 @@ class DeepNetwork(Network):
 class DenseNetwork(Network):
     """Dense Neural Network"""
     def __init__(self, *args, **kwargs):
-        self.model_type = "Dense_Final"
         super(DenseNetwork, self).__init__(*args, **kwargs)
+        self.model_type = "Dense_Final"
 
     def model_func(self):
         input_i = layers.Input(shape=[1])

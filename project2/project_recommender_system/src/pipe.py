@@ -18,7 +18,7 @@ import keras
 from keras import layers
 from keras import models
 from keras import optimizers
-from keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
+from keras.callbacks import Callback, EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 import numpy as np
 
 from utils import load_embedding, load_full_embedding
@@ -44,8 +44,9 @@ def fit(model, train_x, train_y, test_x, test_y, embedding=False, epochs=10, bat
         training_data = load_full_embedding(training_data)
         test_data     = load_full_embedding(test_data)
 
-    callbacks = [EarlyStopping('val_loss', patience=5),
-                 ModelCheckpoint('../res/model/'+model.description_str(), save_best_only=True)]
+    callbacks = [EarlyStopping('val_loss', patience=6),
+                 ModelCheckpoint('../res/model/'+model.description_str(), save_best_only=True),
+                 ReduceLROnPlateau(monitor='val_loss', factor=0.8, patience=4, min_lr=0.0001)]
 
     history = model.model.fit(
         training_data, train_y,

@@ -14,7 +14,7 @@ utils.py : Defining several useful utilities.
 Includes functions to manipulate the model (loading and saving pre-trained models),
 plotting the model's performance, building embeddings.
 """
-
+import warnings
 from keras.utils import plot_model
 from keras   import models
 from sklearn import manifold
@@ -106,55 +106,55 @@ def build_embedding(path, embedding=None):
         return u_nmf, i_nmf
 
 def build_tSNE_embedding(path, suffix="", save=True):
-    raise DeprecationWarning
+    warnings.warn("deprecated", DeprecationWarning)
     print("t-SNE is not used in our models anymore. Make you are calling this method purposefully.")
     u_e, i_e = build_embedding(path=path, embedding='t-SNE')
     if save is True:
-        np.save('../data/embeddings/users_t_sne'+suffix, u_e)
-        np.save('../data/embeddings/items_t_sne'+suffix, i_e)
+        np.save('../data/embeddings/users_t_sne_'+suffix, u_e)
+        np.save('../data/embeddings/items_t_sne_'+suffix, i_e)
     return u_e, i_e
 
 def build_spectral_embedding(path, suffix="", save=True):
     u_e, i_e = build_embedding(path=path, embedding='spectral')
     if save is True:
-        np.save('../data/embeddings/users_spectral'+suffix, u_e)
-        np.save('../data/embeddings/items_spectral'+suffix, i_e)
+        np.save('../data/embeddings/users_spectral_'+suffix, u_e)
+        np.save('../data/embeddings/items_spectral_'+suffix, i_e)
     return u_e, i_e
 
 def build_lle_embedding(path, suffix="", save=True):
     u_e, i_e = build_embedding(path=path, embedding='lle')
     if save is True:
-        np.save('../data/embeddings/users_lle'+suffix, u_e)
-        np.save('../data/embeddings/items_lle'+suffix, i_e)
+        np.save('../data/embeddings/users_lle_'+suffix, u_e)
+        np.save('../data/embeddings/items_lle_'+suffix, i_e)
     return u_e, i_e
 
 def build_fa_embedding(path, suffix="", save=True):
     u_e, i_e = build_embedding(path=path, embedding='fa')
     if save is True:
-        np.save('../data/embeddings/users_fa'+suffix, u_e)
-        np.save('../data/embeddings/items_fa'+suffix, i_e)
+        np.save('../data/embeddings/users_fa_'+suffix, u_e)
+        np.save('../data/embeddings/items_fa_'+suffix, i_e)
     return u_e, i_e
 
 def build_nmf_embedding(path, suffix="", save=True):
     u_e, i_e = build_embedding(path=path, embedding='nmf')
     if save is True:
-        np.save('../data/embeddings/users_nmf'+suffix, u_e)
-        np.save('../data/embeddings/items_nmf'+suffix, i_e)
+        np.save('../data/embeddings/users_nmf_'+suffix, u_e)
+        np.save('../data/embeddings/items_nmf_'+suffix, i_e)
     return u_e, i_e
 
-def load_full_embedding(data):
+def load_full_embedding(data, suffix='64'):
     """
     Load the full pre-computed embeddings.
     """
     item_idx = data[0]; user_idx = data[1]
-    data += load_embedding(path='../data/embeddings/items_spectral_64.npy', idx=item_idx)
-    data += load_embedding(path='../data/embeddings/users_spectral_64.npy', idx=user_idx)
-    data += load_embedding(path='../data/embeddings/items_lle_64.npy',      idx=item_idx)
-    data += load_embedding(path='../data/embeddings/users_lle_64.npy',      idx=user_idx)
-    data += load_embedding(path='../data/embeddings/items_fa_64.npy',       idx=item_idx)
-    data += load_embedding(path='../data/embeddings/users_fa_64.npy',       idx=user_idx)
-    data += load_embedding(path='../data/embeddings/items_nmf_64.npy',      idx=item_idx)
-    data += load_embedding(path='../data/embeddings/users_nmf_64.npy',      idx=user_idx)
+    data += load_embedding(path='../data/embeddings/items_spectral_'+suffix+'.npy', idx=item_idx)
+    data += load_embedding(path='../data/embeddings/users_spectral_'+suffix+'.npy', idx=user_idx)
+    data += load_embedding(path='../data/embeddings/items_lle_'+suffix+'.npy',      idx=item_idx)
+    data += load_embedding(path='../data/embeddings/users_lle_'+suffix+'.npy',      idx=user_idx)
+    data += load_embedding(path='../data/embeddings/items_fa_'+suffix+'.npy',       idx=item_idx)
+    data += load_embedding(path='../data/embeddings/users_fa_'+suffix+'.npy',       idx=user_idx)
+    data += load_embedding(path='../data/embeddings/items_nmf_'+suffix+'.npy',      idx=item_idx)
+    data += load_embedding(path='../data/embeddings/users_nmf_'+suffix+'.npy',      idx=user_idx)
     return data
 
 def load_embedding(path, idx):

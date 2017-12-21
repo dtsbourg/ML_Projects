@@ -58,3 +58,4 @@ if __name__ == '__main__':
     pipeline.deep_net_pipeline(train=train, predict=predict, p=path)
     # pipeline.dense_net_pipeline(  train=train, predict=predict, p=path)
     # pipeline.shallow_net_pipeline(train=train, predict=predict, p=path)
+    # pipeline.embedding_pipeline(suffix='128')

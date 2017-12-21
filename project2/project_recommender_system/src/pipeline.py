@@ -117,6 +117,7 @@ def deep_net_pipeline(train, predict, p=None):
 
         p = training_pipeline(m, train_x, train_y, test_x, test_y)
     if predict:
+        print("Predicting with model ", p)
         predict_pipeline(p)
 
 def training_pipeline(model, train_x, train_y, test_x, test_y):
@@ -181,6 +182,7 @@ def embedding_pipeline(suffix=''):
         * Non-negative Matrix Factorisation
         * Factor Analysis
     """
+    print("Starting embedding pipeline ...")
     x, y, _, _ = data.load_full(categorical=False, test_split=0.0)
     ##################################
     # Interaction Matrix
@@ -190,27 +192,33 @@ def embedding_pipeline(suffix=''):
     #                                       ratings=np.asarray(y),
     #                                       suffix=suffix)
     path = '../data/embeddings/interaction_matrix_full'
+    print("Loaded interaction matrix ...")
     ##################################
     # t-SNE Embedding (deprecated)
     ##################################
     # utils.build_tSNE_embedding(path+'.npy', suffix=suffix)
+    # print("Built t-SNE embeddings ...")
 
     ##################################
     # Spectral Embedding
     ##################################
-    # utils.build_spectral_embedding(path+'.npy', suffix=suffix)
+    utils.build_spectral_embedding(path+'.npy', suffix=suffix)
+    print("Built Spectral Embeddings ...")
 
     ##################################
     # Locally Linear Embedding (LLE)
     ##################################
-    # utils.build_lle_embedding(path+'.npy', suffix=suffix)
+    utils.build_lle_embedding(path+'.npy', suffix=suffix)
+    print("Built LLE Embeddings ...")
 
     ##################################
     # Non-Negative MF (NMF)
     ##################################
-    # utils.build_nmf_embedding(path+'.npy', suffix=suffix)
+    utils.build_nmf_embedding(path+'.npy', suffix=suffix)
+    print("Built NMF Embeddings ...")
 
     ##################################
     # Factor Analysis (FA)
     ##################################
-    # utils.build_fa_embedding(path+'.npy', suffix=suffix)
+    utils.build_fa_embedding(path+'.npy', suffix=suffix)
+    print("Built FA Embeddings ...")
