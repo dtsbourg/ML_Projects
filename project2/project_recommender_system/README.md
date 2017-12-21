@@ -1,5 +1,10 @@
 # Project Recommender System
 
+## Link to github
+
+[Link](https://github.com/dtsbourg/ML_Projects/blob/master/project2/project_recommender_system/report.pdf)
+
+
 ## Team members
 
 * Dylan Bourgeois
@@ -21,7 +26,7 @@ docker run -it dtsbourg/cs433-project:latest bash
 ```
 
 The default image allows for exploration of the project from within the image.
-The `WORKDIR` is the base of the project. See the [Structure](https://github.com/dtsbourg/ML_Projects/tree/master/project2/project_recommender_system#structure) section for more
+The `WORKDIR` is the base of the project. See the [Structure](#structure) section for more
 information on how the repository is organised.
 
 You can then build the project as follows :
@@ -39,6 +44,12 @@ the training (on our best performing model), please run :
 cd src
 python3 run.py --train # for training, or
 python3 run.py --predict # for prediction
+```
+
+If needed, the embeddings can also be recomputed by adding the `-e` or `--embeddings` flag. It is compatible with all the other modes :
+
+```bash
+python3 run.py --embeddings
 ```
 
 #### building
@@ -72,6 +83,7 @@ cd ../../src
 python3 run.py # for the full pipeline, or
 python3 run.py --train # for training, or
 python3 run.py --predict # for prediction
+python3 run.py --embeddings # enable the embeddings flag
 ``` 
 
 ### Reproducing our results
@@ -126,6 +138,18 @@ A file `submission_{date}.csv` will be produced in `res/pred/` with the resultin
 ### Backend
 
 We have tested on a [Theano](http://www.deeplearning.net/software/theano/) and a [Tensorflow](https://www.tensorflow.org) backend, using CPU or GPU. Both should yield the same results, but you can set your preference by changing the Keras configuration file located in `~/.keras/keras.json`. The default is Tensorflow.
+
+### Time considerations
+
+| Step                    | CPU\*   | GPU\**  |
+| ----------------------- |:-------:|:-------:|
+| Embeddings (dim=64)     | 30 min  | 3 min   |
+| Training (per epoch)    | 350 s   | 12 s    |
+| Training (total)        | 3 h     | 6 min   |
+| Prediction              | 2 min   | 20 s    |
+
+\* Intel i7 CPU 2.3GHz
+\** [NVIDIA Titan M60](https://www.nvidia.com/object/tesla-m60.html)
 
 ## Structure
 
@@ -185,4 +209,4 @@ In tree form, the repository has the following structure.
 
 ## Report
 
-
+The report is included in this repository : [report.pdf](report.pdf)
