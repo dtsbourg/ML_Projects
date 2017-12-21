@@ -16,7 +16,8 @@
 ### Docker
 
 We provide a Docker file which allows the project to be run directly. It is
-based on [gw0/docker-keras](https://github.com/gw0/docker-keras).
+based on [gw0/docker-keras](https://github.com/gw0/docker-keras). The image 
+is available on [Docker Hub](https://hub.docker.com/r/dtsbourg/cs433-project/).
 
 #### Running
 
