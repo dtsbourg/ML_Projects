@@ -20,6 +20,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Description of your program')
 parser.add_argument('-t','--train', dest='mode', action='store_const', help='Run training.', const='train')
 parser.add_argument('-p','--predict', dest='mode', action='store_const', help='Run the submission.', const='setup')
+parser.add_argument('-e','--embeddings', action='store_true', help='Run the emebeddings.')
 
 def get_mode(args):
     """
@@ -54,8 +55,9 @@ def get_mode(args):
 if __name__ == '__main__':
     args = vars(parser.parse_args())
     train, predict, path = get_mode(args)
+    if args['embeddings'] is True:
+        pipeline.embedding_pipeline(suffix='64')
 
     pipeline.deep_net_pipeline(train=train, predict=predict, p=path)
     # pipeline.dense_net_pipeline(  train=train, predict=predict, p=path)
     # pipeline.shallow_net_pipeline(train=train, predict=predict, p=path)
-    # pipeline.embedding_pipeline(suffix='128')
