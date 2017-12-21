@@ -24,6 +24,14 @@ import os.path
 
 
 def explore(quick_load = False):
+    """Explore the data and provide multiple analysis
+        (plots are made available in the "res/img" folder:
+        * full matrix insight
+        * subset matrix insight
+        * sample submission insight
+        * number of ratings per movie
+        * number of ratings per user
+    """
     # load data into a table by extracting user and item numbers
     ratings = pd.read_csv('../data/data/data_train.csv', dtype={'Prediction': np.int})
 
@@ -67,9 +75,7 @@ def explore(quick_load = False):
     print("The data is {} % sparse !".format((1-occupancy_stat)*100))
 
     matrix_subset = matrix[:,:1000]
-    #occupancy_stat = np.count_nonzero(matrix_subset) / matrix_subset.size
-    #print("Matrix subset: {} % occupancy".format(str(occupancy_stat*100)))
-
+    
     # Leave one out test / train split
     # Adapted from https://gist.github.com/Wann-Jiun/d91f7ccbd20659e9725052a9ac5aed10#file-nycdsa_p5_split-py
     train_matrix = matrix_subset.copy()
@@ -156,10 +162,7 @@ def explore(quick_load = False):
     fig.savefig('../res/img/moviescdf.png')
     plt.show()
 
-
-
     # users
-
     print('Mean number of ratings per user : %s' % ratings_per_user.mean())
     plt.style.use('ggplot')
 
@@ -193,8 +196,6 @@ def explore(quick_load = False):
 
     ratings_per_movie = (matrix != 0).sum(0)
 
-    #print(np.corrcoef(ratings_per_movie,mean_per_movie))
-
     fig = plt.figure(figsize = (8,5))
     h = plt.scatter(ratings_per_movie,mean_per_movie, c='b', linewidth=1)
 
@@ -206,8 +207,6 @@ def explore(quick_load = False):
     plt.ylabel('Average rating', fontsize = 16)
     fig.savefig('../res/img/ratingmovielinear.png')
     plt.show()
-
-
 
     n = 0
     for i in range(matrix.shape[0]):
@@ -227,6 +226,5 @@ def explore(quick_load = False):
     plt.ylabel('Number of users', fontsize = 16)
     fig.savefig('../res/img/differencetomean.png')
     plt.show()
-
 
 explore()

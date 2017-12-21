@@ -21,7 +21,7 @@ docker run -it dtsbourg/cs433-project:latest bash
 ```
 
 The default image allows for exploration of the project from within the image.
-The `WORKDIR` is the base of the project. See the [Structure](#) section for more
+The `WORKDIR` is the base of the project. See the [Structure](https://github.com/dtsbourg/ML_Projects/tree/master/project2/project_recommender_system#structure) section for more
 information on how the repository is organised.
 
 You can then build the project as follows :
@@ -31,7 +31,7 @@ cd src
 python3 run.py
 ```
 
-By default the `main.py` script will launch both the training and prediction
+By default the `run.py` script will launch both the training and prediction
 pipelines. To run only the prediction (by default with our best model) or only
 the training (on our best performing model), please run :
 
@@ -176,7 +176,7 @@ In tree form, the repository has the following structure.
 * `pipe.py` : interface for heavy lifting.
 * `pipeline.py` : Defines some common pipeline used in this project.
 * `run.py` : main interface.
-* `surprise_lib.py` : interface for running the baselines with [Suprise](http://surpriselib.com/).
+* `surprise_lib.py` : interface for running the baselines with [Surprise](http://surpriselib.com/).
 * `utils.py` : Defining several useful utilities.
 
 ## Report

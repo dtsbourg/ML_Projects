@@ -26,14 +26,6 @@ from sklearn.metrics import mean_squared_error
 import math
 import statistics as stat
 
-def load_csv(filename):
-    df = pd.read_csv(filename)
-    df['User'] = df['Id'].apply(lambda x: int(x.split('_')[0][1:]))
-    df['Item'] = df['Id'].apply(lambda x: int(x.split('_')[1][1:]))
-    df['Rating'] = df['Prediction']
-    df = df.drop(['Id', 'Prediction'], axis=1)
-    return df
-
 def dict_mean_user(df):
     """ dictionary with key UserID and value User Mean """
     return dict(df.groupby('User').mean().Rating)
@@ -57,6 +49,23 @@ def dict_nbrating_movie(df):
 
 
 def baselines():
+    """
+    Run baselines algorithms:
+    * movie mean
+    * global mean
+    * global median
+    * user median
+    * movie median
+    * movie regularized
+    * movie mean corrected
+    * movie median corrected
+
+    Loads data from "data/data/data_train.csv".
+    divides it in "train" (for learning) and "test" (for evaluating),
+    and runs the aforementioned algorithms on it.
+    The "test" data is stored in a pickle for later use. 
+    """
+    
     users_bs_path = os.path.join('..','data','baselines','users_baseline.p')
     movies_bs_path = os.path.join('..','data','baselines','movies_baseline.p')
     train_bs_path = os.path.join('..','data','baselines','train_baseline.p')
@@ -177,28 +186,6 @@ def baselines():
                                                                         test['Rating']))))
 
 
-def blending_fun(x):
-    Baselines = ['Global_Mean', 'User_Mean', 'Movie_Mean', 'Movie_Mean_Corrected',
-                 'Global_Median', 'User_Median', 'Movie_Median', 'Movie_Median_Corrected', 'Movie_RegLin']
-
-    res = 0
-    for i in range(len(Baselines)):
-        res += x[i] * train[Baselines[i]]
-
-    rmse = math.sqrt(mean_squared_error(res, train['Rating']))
-    return rmse
-
-
-def blending():
-    myList = [1., 1., 1., 1., 1., 1., 1., 1., 1.]
-    x0 = [x / 9.0 for x in myList]
-
-    res = sc.optimize.minimize(blending_fun, x0, method='SLSQP', options={'disp': True})
-    print(res)
 
 def run():
     baselines()
-    ##train = pd.read_pickle('svg/baseline_train.p')
-    ##test  = pd.read_pickle('svg/baseline_test.p')
-    ##
-    ##blending()
