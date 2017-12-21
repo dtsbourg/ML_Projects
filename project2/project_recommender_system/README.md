@@ -123,6 +123,10 @@ python3 run.py --prediction
 
 A file `submission_{date}.csv` will be produced in `res/pred/` with the resulting predictions.
 
+### Backend
+
+We have tested on a [Theano](http://www.deeplearning.net/software/theano/) and a [Tensorflow](https://www.tensorflow.org) backend, using CPU or GPU. Both should yield the same results, but you can set your preference by changing the Keras configuration file located in `~/.keras/keras.json`. The default is Tensorflow.
+
 ## Structure
 
 ### Repository
